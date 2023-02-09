@@ -1,4 +1,4 @@
 <div class="container">
-    <p-card class="text-center" header="Connexion">
-    </p-card>
+    <p-tabMenu [model]="items" [activeItem]="activeItem" (activeItemChange)="changeActiveLogin($event)"></p-tabMenu>
+    <app-login loginFunc=""></app-login>
 </div>
