@@ -15,6 +15,7 @@ import {FormsModule} from '@angular/forms';
 import { LoginComponent } from './components/home/login/login.component';
 import {TabMenuModule} from 'primeng/tabmenu';
 import {ProgressSpinnerModule} from 'primeng/progressspinner';
+import { ReactiveFormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
     AppComponent,
@@ -33,7 +34,8 @@ import {ProgressSpinnerModule} from 'primeng/progressspinner';
     RippleModule,
     FormsModule,
     TabMenuModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
