@@ -20,6 +20,7 @@ export class HomeComponent {
   items:MenuItem[] = [
     {label: "Étudiant"},
     {label:"Professeur"},
+    {label:"Gestionnaire"},
     {label:"Administrateur"}
   ] 
   activeItem:MenuItem = this.items[0];
