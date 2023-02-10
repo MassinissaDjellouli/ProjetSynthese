@@ -1,13 +1,14 @@
-<p-card class="text-center" header="Connexion">
+<p-card class="text-center" header="Connexion" [subheader]="getLoginType()">
     <div class="col-12 ">
+        <p class="error-txt" *ngIf="getError() != ''">{{getError()}}</p>
         <div class="p-inputgroup mt-2">
             <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
-            <input type="text" pInputText placeholder="Matricule">         
+            <input type="text" pInputText placeholder="Matricule" [formControl]="username">         
         </div>
         <div class="p-inputgroup mt-4">
             <span class="p-inputgroup-addon"><i class="pi pi-lock"></i></span>
-            <input type="password" pInputText placeholder="Mot de passe">         
+            <input type="password" pInputText placeholder="Mot de passe" [formControl]="password">         
         </div>
-        <button pButton class="mt-4" label="Connexion" (onClick)="login()"></button>
+        <button pButton class="mt-4" label="Connexion" (click)="login()"></button>
     </div>
 </p-card>
