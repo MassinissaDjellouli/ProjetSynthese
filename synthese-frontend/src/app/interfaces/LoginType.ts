@@ -1,1 +1,1 @@
-export type LoginType = "Étudiant" | "Professeur" | "Administrateur"
+export type LoginType = "Étudiant" | "Professeur" | "Administrateur" | "Gestionnaire"
