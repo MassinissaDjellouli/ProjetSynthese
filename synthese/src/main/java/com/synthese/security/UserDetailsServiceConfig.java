@@ -16,8 +16,5 @@ public class UserDetailsServiceConfig {
         return manager;
     }
 
-    @Bean
-    BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+
 }
