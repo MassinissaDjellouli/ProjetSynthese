@@ -1,0 +1,1 @@
+export type CourseType = "Technique" | "Preuniversitaire" | "Autre"
