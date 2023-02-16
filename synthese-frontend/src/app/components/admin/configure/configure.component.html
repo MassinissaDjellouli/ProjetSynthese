@@ -1,0 +1,90 @@
+<div class="container">
+    <p-card>
+        <ng-template pTemplate="header">
+            <h1 class="text-center bg-light-g p-3">Configuration de votre établissement</h1>
+        </ng-template>
+        <div class="row">
+            <div class="col-12 d-flex justify-content-center my-3">
+                <span class="p-float-label row col-12">
+                    <input id="name" type="text" pInputText>
+                    <label for="name">Nom de l'établissement</label>
+                </span>
+            </div>
+            <div class="col-12 d-flex justify-content-center my-3">
+                <span class="p-float-label row col-12">
+                    <input id="adress" type="text" pInputText>
+                    <label for="adress">Adresse de l'établissement</label>
+                </span>
+            </div>
+            <div class="col-12 d-flex justify-content-center my-3">
+                <span class="p-float-label row col-12">
+                    <input id="phone" type="text" pInputText>
+                    <label for="phone">Numéro de téléphone de l'établissement</label>
+                </span>
+            </div>
+            <div class="col-12 d-flex justify-content-center my-3">
+                <span class="p-float-label row col-12">
+                    <input id="sessionDuration" type="number" pInputText>
+                    <label for="sessionDuration">Durée des sessions en mois</label>
+                </span>
+            </div>
+            <div class="col-12 d-flex justify-content-center my-3">
+                <span class="p-float-label row col-12">
+                    <input id="openTime" type="time" pInputText>
+                    <label for="openTime" class="text-left">Heure d'ouverture</label>
+                </span>
+            </div>
+            <div class="col-12 d-flex justify-content-center my-3">
+                <span class="p-float-label row col-12">
+                    <input id="closeTime" type="time" pInputText>
+                    <label for="closeTime">Heure de fermeture</label>
+                </span>
+            </div>
+            <div class="col-12 d-flex justify-content-center my-3">
+                <span class="p-float-label row col-12">
+                    <input id="classStart" type="time" pInputText>
+                    <label for="classStart">Heure de début des cours</label>
+                </span>
+            </div>
+            <div class="col-12 d-flex justify-content-center my-3">
+                <span class="p-float-label row col-12">
+                    <input id="dinnerTime" type="number" pInputText>
+                    <label for="dinnerTime">Durée de dinner en minutes</label>
+                </span>
+            </div>
+            <div class="col-12 d-flex justify-content-center my-3">
+                <span class="p-float-label row col-12">
+                    <input id="periodsPerDay" type="number" pInputText>
+                    <label for="periodsPerDay">Nombre de périodes dans la journée</label>
+                </span>
+            </div>
+            <div class="col-12 d-flex justify-content-center my-3">
+                <span class="p-float-label row col-12">
+                    <input id="periodsBeforeDinner" type="number" pInputText>
+                    <label for="periodsBeforeDinner">Nombre de périodes avant le dinner</label>
+                </span>
+            </div>
+            <div class="col-12 d-flex justify-content-center my-3">
+                <span class="p-float-label row col-12">
+                    <input id="pauseTime" type="number" pInputText>
+                    <label for="pauseTime">Durée en minutes de la pause entre les périodes</label>
+                </span>
+            </div>
+        </div>
+        <div class="row" *ngIf="programListError != ''">
+            <h4 class="text-danger text-center">{{programListError}}</h4>
+        </div>
+        <div class="row">
+            <label class="text-center h4">Liste des programmes (Fichier xml ou json)</label>
+            <p-fileUpload accept=".json,.xml" [maxFileSize]="1000000" [customUpload]="true"
+                (uploadHandler)="upload($event)">
+                <ng-template pTemplate="content">
+                    <ul *ngIf="uploadedFiles.length">
+                        <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
+                    </ul>
+                </ng-template>
+            </p-fileUpload>
+        </div>
+
+    </p-card>
+</div>
