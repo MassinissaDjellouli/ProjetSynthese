@@ -1,10 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
-
+/*
 .main{
     background-color: rgb(34, 50, 64);
     color: white;
 }
-
+*/
+.main{
+    background-color: rgb(233, 232, 241);
+    color: rgb(43, 43, 43);
+}
 .error-txt{
     color: rgb(224, 57, 57);
 }
