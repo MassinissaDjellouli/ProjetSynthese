@@ -1,5 +1,10 @@
 package com.synthese.service;
 
+import com.synthese.dto.EstablishmentDTO;
+import com.synthese.dto.LoginDTO;
+import com.synthese.exceptions.AdminNotFoundException;
+import com.synthese.exceptions.UserNotFoundException;
+import com.synthese.exceptions.WrongPasswordException;
 import com.synthese.model.Administrator;
 import com.synthese.model.User;
 import com.synthese.repository.AdministratorRepository;
@@ -9,36 +14,59 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class AdministratorService {
+    //    private BCryptPasswordEncoder passwordEncoder;
     private AdministratorRepository adminRepository;
     private UserRepository userRepository;
+    private final String DEFAULT_ADMIN_PASSWORD = "12345678";
+    private final String DEFAULT_ADMIN_USERNAME = "admin123";
+
 
     public void createDefaultAdministrator() {
-        if (userRepository.findByUsername("admin").isPresent() || adminRepository.findByUsername("admin").isPresent()) {
+        if (userRepository.findByUsername(DEFAULT_ADMIN_USERNAME).isPresent() || adminRepository.findByUsername(DEFAULT_ADMIN_USERNAME).isPresent()) {
             return;
         }
+        User defaultAdminUser = createNewUser(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, Roles.ADMIN);
         adminRepository.save(Administrator.builder()
-                .username("admin")
-                .password("admin")
+                .username(DEFAULT_ADMIN_USERNAME)
                 .firstName("Massinissa")
                 .lastName("Djellouli")
+                .userId(defaultAdminUser.getId())
                 .build());
-        User defaultAdminUser = createNewUser("admin", "admin", Roles.ADMIN);
         defaultAdminUser.setExpirationDate(LocalDateTime.of(2033, 12, 31, 23, 59, 59));
-        userRepository.save(defaultAdminUser);
     }
 
     private User createNewUser(String username, String password, Roles role) {
-        return User.builder()
+        return userRepository.save(User.builder()
                 .username(username)
                 .password(password)
                 .role(role)
                 .expirationDate(LocalDateTime.now().plusMonths(6))
                 .locked(false)
                 .credentialsExpirationDate(LocalDateTime.now())
-                .build();
+                .build());
+    }
+
+
+    public Administrator login(LoginDTO loginDTO) throws UserNotFoundException, WrongPasswordException, AdminNotFoundException {
+        Optional<User> user = userRepository.findByUsernameAndRole(loginDTO.getUsername(), Roles.ADMIN);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        if (!user.get().getPassword().equals(loginDTO.getPassword())) {
+            throw new WrongPasswordException();
+        }
+        Optional<Administrator> adminOpt = adminRepository.getByUserId(user.get().getId());
+        if (adminOpt.isEmpty()) {
+            throw new AdminNotFoundException();
+        }
+        return adminOpt.get();
+    }
+
+    public void configurateEstablishment(EstablishmentDTO establishmentDTO) {
     }
 }
