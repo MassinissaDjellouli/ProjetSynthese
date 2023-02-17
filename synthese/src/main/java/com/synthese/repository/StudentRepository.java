@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface StudentRepository extends MongoRepository<Student, Long> {
+public interface StudentRepository extends MongoRepository<Student, ObjectId> {
     Optional<Student> getByUserId(ObjectId id);
 }

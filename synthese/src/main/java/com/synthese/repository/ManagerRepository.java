@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 
-public interface ManagerRepository extends MongoRepository<Manager, Long> {
+public interface ManagerRepository extends MongoRepository<Manager, ObjectId> {
     Optional<Manager> getByUserId(ObjectId id);
 }
