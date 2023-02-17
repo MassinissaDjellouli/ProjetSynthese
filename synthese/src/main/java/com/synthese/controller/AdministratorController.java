@@ -1,6 +1,7 @@
 package com.synthese.controller;
 
 import com.synthese.dto.AdminstratorDTO;
+import com.synthese.dto.EstablishmentDTO;
 import com.synthese.dto.LoginDTO;
 import com.synthese.exceptions.AdminNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
@@ -32,6 +33,14 @@ public class AdministratorController {
         }
     }
 
-
+    @PostMapping("/configureEstablishment")
+    public ResponseEntity<EstablishmentDTO> configureEstablishment(@Valid @RequestBody EstablishmentDTO establishmentDTO) {
+        try {
+            adminService.configureEstablishment(establishmentDTO);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }
