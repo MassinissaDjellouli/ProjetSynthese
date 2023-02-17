@@ -3,70 +3,90 @@
         <ng-template pTemplate="header">
             <h1 class="text-center bg-light-g p-3">Configuration de votre établissement</h1>
         </ng-template>
-        <div class="row">
+        <div class="row" [formGroup]="configuration">
             <div class="col-12 d-flex justify-content-center my-3">
                 <span class="p-float-label row col-12">
-                    <input id="name" type="text" pInputText>
+                    <input id="name" type="text" pInputText formControlName="name">
                     <label for="name">Nom de l'établissement</label>
                 </span>
             </div>
             <div class="col-12 d-flex justify-content-center my-3">
                 <span class="p-float-label row col-12">
-                    <input id="adress" type="text" pInputText>
-                    <label for="adress">Adresse de l'établissement</label>
+                    <input id="address" type="text" pInputText formControlName="address">
+                    <label for="address">Adresse de l'établissement</label>
                 </span>
             </div>
             <div class="col-12 d-flex justify-content-center my-3">
                 <span class="p-float-label row col-12">
-                    <input id="phone" type="text" pInputText>
+                    <input id="phone" type="text" pInputText formControlName="phone">
                     <label for="phone">Numéro de téléphone de l'établissement</label>
                 </span>
             </div>
             <div class="col-12 d-flex justify-content-center my-3">
                 <span class="p-float-label row col-12">
-                    <input id="sessionDuration" type="number" pInputText>
+                    <input id="sessionDuration" type="number" pInputText formControlName="sessionDuration">
                     <label for="sessionDuration">Durée des sessions en mois</label>
                 </span>
             </div>
             <div class="col-12 d-flex justify-content-center my-3">
-                <span class="p-float-label row col-12">
-                    <input id="openTime" type="time" pInputText>
+                <span class="row col-12">
                     <label for="openTime" class="text-left">Heure d'ouverture</label>
+                    <input id="openTime" type="time" pInputText formControlName="openTime">
                 </span>
             </div>
             <div class="col-12 d-flex justify-content-center my-3">
-                <span class="p-float-label row col-12">
-                    <input id="closeTime" type="time" pInputText>
+                <div class="row d-flex justify-content-center col-12 d-none d-lg-inline">
+                    <label for="openDays" class="text-left">Jours de cours</label>
+                    <p-selectButton [options]="DAYS_OF_THE_WEEK" [(ngModel)]="selectedDays"
+                        [ngModelOptions]="{standalone: true}" optionLabel="name" optionValue="name"
+                        [multiple]="true"></p-selectButton>
+                </div>
+                <div class="row d-flex justify-content-center col-12 d-lg-none">
+                    <label for="openDays" class="text-left">Jours de cours</label>
+                    <p-multiSelect [options]="DAYS_OF_THE_WEEK" [(ngModel)]="selectedDays"
+                        [ngModelOptions]="{standalone: true}" optionLabel="name" display="chip" optionLabel="name"
+                        defaultLabel="Choisir des jours"></p-multiSelect>
+                </div>
+            </div>
+            <div class="col-12 d-flex justify-content-center my-3">
+                <span class="row col-12">
                     <label for="closeTime">Heure de fermeture</label>
+                    <input id="closeTime" type="time" pInputText formControlName="closeTime">
                 </span>
             </div>
             <div class="col-12 d-flex justify-content-center my-3">
-                <span class="p-float-label row col-12">
-                    <input id="classStart" type="time" pInputText>
+                <span class="row col-12">
                     <label for="classStart">Heure de début des cours</label>
+                    <input id="classStart" type="time" pInputText formControlName="classStart">
                 </span>
             </div>
             <div class="col-12 d-flex justify-content-center my-3">
                 <span class="p-float-label row col-12">
-                    <input id="dinnerTime" type="number" pInputText>
+                    <input id="dinnerTime" type="number" pInputText formControlName="dinnerTime">
                     <label for="dinnerTime">Durée de dinner en minutes</label>
                 </span>
             </div>
             <div class="col-12 d-flex justify-content-center my-3">
                 <span class="p-float-label row col-12">
-                    <input id="periodsPerDay" type="number" pInputText>
+                    <input id="periodsLength" type="number" pInputText formControlName="periodsLength">
+                    <label for="periodsLength">Durée d'une période en minutes</label>
+                </span>
+            </div>
+            <div class="col-12 d-flex justify-content-center my-3">
+                <span class="p-float-label row col-12">
+                    <input id="periodsPerDay" type="number" pInputText formControlName="periodsPerDay">
                     <label for="periodsPerDay">Nombre de périodes dans la journée</label>
                 </span>
             </div>
             <div class="col-12 d-flex justify-content-center my-3">
                 <span class="p-float-label row col-12">
-                    <input id="periodsBeforeDinner" type="number" pInputText>
+                    <input id="periodsBeforeDinner" type="number" pInputText formControlName="periodsBeforeDinner">
                     <label for="periodsBeforeDinner">Nombre de périodes avant le dinner</label>
                 </span>
             </div>
             <div class="col-12 d-flex justify-content-center my-3">
                 <span class="p-float-label row col-12">
-                    <input id="pauseTime" type="number" pInputText>
+                    <input id="pauseTime" type="number" pInputText formControlName="pauseTime">
                     <label for="pauseTime">Durée en minutes de la pause entre les périodes</label>
                 </span>
             </div>
@@ -75,16 +95,37 @@
             <h4 class="text-danger text-center">{{programListError}}</h4>
         </div>
         <div class="row">
-            <label class="text-center h4">Liste des programmes (Fichier xml ou json)</label>
-            <p-fileUpload accept=".json,.xml" [maxFileSize]="1000000" [customUpload]="true"
-                (uploadHandler)="upload($event)">
-                <ng-template pTemplate="content">
-                    <ul *ngIf="uploadedFiles.length">
-                        <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
-                    </ul>
-                </ng-template>
-            </p-fileUpload>
-        </div>
+            <label class="text-center h3">Liste des programmes (Fichier xml ou json)</label>
+            <div *ngIf="!isDisabled()">
 
+                <p-fileUpload accept=".json,.xml" [maxFileSize]="1000000" [customUpload]="true"
+                    (uploadHandler)="upload($event)">
+                    <ng-template pTemplate="content" >
+                        <ul *ngIf="uploadedFiles.length">
+                            <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
+                        </ul>
+                    </ng-template>
+                </p-fileUpload>
+            </div>
+            <p-scrollPanel *ngIf="isDisabled()">
+                <p-card *ngFor="let program of programList">
+                    <div class="justify-content-center d-flex my-2">
+                        <h4>{{program.name}}</h4>
+                    </div>
+                    <div class="justify-content-center text-center d-flex">
+                        {{program.description}}
+                    </div>
+                    <div class="row d-flex">
+                        <div class="col-6 text-start">Nombre de professeurs: {{program.teachers ? program.teachers.length : 0}}</div>
+                        <div class="col-6 text-end">Nombre de cours: {{program.courses ? program.courses.length : 0}}</div>
+                    </div>
+                </p-card>
+                <p-scrollTop target="parent" styleClass="custom-scrolltop" [threshold]="100"
+                    icon="pi pi-arrow-up"></p-scrollTop>
+            </p-scrollPanel>
+        </div>
+        <div class="justify-content-center d-flex">
+            <button pButton class="mt-4 px-5" (click)="save()">Sauvegarder</button>
+        </div>
     </p-card>
 </div>
