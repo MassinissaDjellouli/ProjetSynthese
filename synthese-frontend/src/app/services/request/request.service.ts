@@ -8,7 +8,7 @@ import { ApiResponse } from 'src/app/interfaces/ApiResponse';
 export class RequestService {
 
   constructor() { }
-  private apiLink = "http://localhost:8000/api/"
+  private apiLink = "http://localhost:8080/api/"
 
   getRequest = async (endpoint: string): Promise<ApiResponse | ApiError> => {
     const res = await fetch(this.apiLink + endpoint)
@@ -18,9 +18,12 @@ export class RequestService {
     return { error: await res.text() } as ApiError
   }
 
-  putRequest = async <T> (endpoint: string,body:T): Promise<ApiResponse | ApiError> => {
+  postRequest = async <T> (endpoint: string,body:T): Promise<ApiResponse | ApiError> => {
     const res = await fetch(this.apiLink + endpoint,{
-      method:"PUT",
+      method:"POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body:JSON.stringify(body)
     })
     if (res.ok) {
