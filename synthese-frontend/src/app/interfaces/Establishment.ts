@@ -1,3 +1,4 @@
+import { Manager } from "./Manager";
 import { Program } from "./Program";
 import { Student } from "./Student";
 import { Teacher } from "./Teacher";
