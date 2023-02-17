@@ -15,7 +15,7 @@ export class RequestService {
     if (res.ok) {
       return { data: await res.json() } as ApiResponse
     }
-    return { error: await res.text() } as ApiError
+    return { error: await res.text(), status:res.status  } as ApiError
   }
 
   postRequest = async <T> (endpoint: string,body:T): Promise<ApiResponse | ApiError> => {
@@ -26,10 +26,12 @@ export class RequestService {
       },
       body:JSON.stringify(body)
     })
+    console.log(res);
+    
     if (res.ok) {
       return { data: await res.json() } as ApiResponse
     }
-    return { error: await res.text() } as ApiError
+    return { error: await res.text(), status:res.status } as ApiError
   }
 }
 export const isError = (res: ApiError | ApiResponse) => {
@@ -41,5 +43,8 @@ export const isError = (res: ApiError | ApiResponse) => {
 }
 export const parseError = (res:ApiError | ApiResponse) => {
   let err = (res as ApiError).error
+  if (err == undefined) {
+    err = "Unknown error"
+  }
   return err;
 }
