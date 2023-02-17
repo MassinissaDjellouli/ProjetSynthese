@@ -190,7 +190,7 @@ export class ConfigureComponent {
       periodLength: this.configuration.get('periodLength')?.value,
       daysPerWeek: this.selectedDays,
       programs: this.programList,
-      id: 0,
+      id: "",
       managers: [],
       students: [],
       teachers: [],
