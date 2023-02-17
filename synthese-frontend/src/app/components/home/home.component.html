@@ -1,4 +1,12 @@
 <div class="container">
-    <p-tabMenu [model]="items" [activeItem]="activeItem" (activeItemChange)="changeActiveLogin($event)"></p-tabMenu>
-    <app-login loginFunc=""></app-login>
+    <div *ngIf="!isLoggedIn()">
+        <p-tabMenu [model]="items" [activeItem]="activeItem" (activeItemChange)="changeActiveLogin($event)"></p-tabMenu>
+        <app-login></app-login>
+    </div>
+    <div *ngIf="isLoggedIn() && currentUserRole() != undefined">
+        <app-teacher *ngIf="currentUserRole() == 'Teacher'"></app-teacher>
+        <app-admin *ngIf="currentUserRole() == 'Admin'"></app-admin>
+        <app-manager *ngIf="currentUserRole() == 'Manager'"></app-manager>
+        <app-student *ngIf="currentUserRole() == 'Student'"></app-student>
+    </div>
 </div>
