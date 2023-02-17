@@ -8,6 +8,7 @@ import com.synthese.exceptions.WrongPasswordException;
 import com.synthese.model.Administrator;
 import com.synthese.model.User;
 import com.synthese.repository.AdministratorRepository;
+import com.synthese.repository.EstablishmentRepository;
 import com.synthese.repository.UserRepository;
 import com.synthese.security.Roles;
 import lombok.AllArgsConstructor;
@@ -20,14 +21,15 @@ import java.util.Optional;
 @AllArgsConstructor
 public class AdministratorService {
     //    private BCryptPasswordEncoder passwordEncoder;
-    private AdministratorRepository adminRepository;
-    private UserRepository userRepository;
+    private final AdministratorRepository adminRepository;
+    private final UserRepository userRepository;
+    private final EstablishmentRepository establishmentRepository;
     private final String DEFAULT_ADMIN_PASSWORD = "12345678";
     private final String DEFAULT_ADMIN_USERNAME = "admin123";
 
 
     public void createDefaultAdministrator() {
-        if (userRepository.findByUsername(DEFAULT_ADMIN_USERNAME).isPresent() || adminRepository.findByUsername(DEFAULT_ADMIN_USERNAME).isPresent()) {
+        if (userRepository.findByUsernameAndRole(DEFAULT_ADMIN_USERNAME, Roles.ADMIN).isPresent() || adminRepository.findByUsername(DEFAULT_ADMIN_USERNAME).isPresent()) {
             return;
         }
         User defaultAdminUser = createNewUser(DEFAULT_ADMIN_USERNAME, DEFAULT_ADMIN_PASSWORD, Roles.ADMIN);
@@ -67,6 +69,15 @@ public class AdministratorService {
         return adminOpt.get();
     }
 
-    public void configurateEstablishment(EstablishmentDTO establishmentDTO) {
+    public void configureEstablishment(EstablishmentDTO establishmentDTO) {
+        if (establishmentDTO.getId() != null && !establishmentDTO.getId().isEmpty()) {
+            updateEstablishment(establishmentDTO);
+            return;
+        }
+        establishmentRepository.save(establishmentDTO.toModel());
+    }
+
+    private void updateEstablishment(EstablishmentDTO establishmentDTO) {
+
     }
 }
