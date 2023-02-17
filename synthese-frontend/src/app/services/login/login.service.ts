@@ -41,21 +41,18 @@ export class LoginService {
   }
 
   private managerLogin = async (credentials:Credentials) => {
-    this.reqService.getRequest("manager/login")
+    this.reqService.postRequest<Credentials>("manager/login",credentials)
   }
 
   private adminLogin = async (credentials:Credentials) => {
-    console.log("admin");
-    
+    await this.reqService.postRequest<Credentials>("admin/login",credentials)
   }
 
   private studentLogin = async (credentials:Credentials) => {
-    console.log("stud");
-
+    this.reqService.postRequest<Credentials>("student/login",credentials)
   }
 
   private teacherLogin = async (credentials:Credentials) => {
-    console.log("teach");
-
+    this.reqService.postRequest<Credentials>("teacher/login",credentials)
   }
 }
