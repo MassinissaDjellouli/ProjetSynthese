@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { LoadingService } from './services/loading/loading.service';
+import { LoggedInService } from './services/login/loggedIn/logged-in.service';
 
 @Component({
   selector: 'app-root',
@@ -8,10 +9,9 @@ import { LoadingService } from './services/loading/loading.service';
 })
 export class AppComponent {
   title = 'synthese-frontend';
- 
-  constructor(private loadingServ:LoadingService){
-
+  constructor(private loadingServ:LoadingService,private loggedInService:LoggedInService){
+      loggedInService.loginFromCookie();
   }
-
+  
   loading = this.loadingServ.isLoading
 }
