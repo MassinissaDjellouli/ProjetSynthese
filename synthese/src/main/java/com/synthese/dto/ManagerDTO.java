@@ -4,12 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+@Builder
 @Data
 @AllArgsConstructor
-@Builder
-public class StudentDTO {
+public class ManagerDTO {
     private String firstName;
     private String lastName;
     private String username;
-    private int currentSession;
 }
