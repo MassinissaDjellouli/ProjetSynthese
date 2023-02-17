@@ -12,3 +12,7 @@
 .error-txt{
     color: rgb(224, 57, 57);
 }
+
+.bg-p{
+    background-color: var(--primary-color);
+}
