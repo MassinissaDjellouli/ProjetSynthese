@@ -1,1 +1,3 @@
-export interface Admin{}
+export interface Admin{
+    id:string;    
+}
