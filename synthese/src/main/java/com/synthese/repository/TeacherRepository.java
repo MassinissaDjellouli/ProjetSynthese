@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 
 public interface TeacherRepository extends MongoRepository<Teacher, ObjectId> {
-    Optional<Teacher> getByUserId(ObjectId id);
+    Optional<Teacher> findByUserId(ObjectId id);
 }
