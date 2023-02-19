@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ManagerDTO {
+    private String id;
     private String firstName;
     private String lastName;
     private String username;
