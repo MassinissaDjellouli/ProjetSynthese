@@ -8,12 +8,13 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.bson.types.ObjectId;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class EstablishmentDTO {
 
@@ -51,7 +52,6 @@ public class EstablishmentDTO {
 
     public Establishment toModel() {
         return Establishment.builder()
-                .id(new ObjectId(id))
                 .address(address)
                 .phone(phone)
                 .programs(programs)
