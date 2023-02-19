@@ -5,19 +5,25 @@ import { FormGroup, FormControl, Validators, ValidatorFn, AbstractControl, Valid
 import { LoadingService } from '../../../services/loading/loading.service';
 import { Establishment } from '../../../interfaces/Establishment';
 import { Teacher } from '../../../interfaces/Teacher';
+import { RequestService, isError, parseError } from '../../../services/request/request.service';
+import { ApiResponse } from 'src/app/interfaces/ApiResponse';
+import { Router } from '@angular/router';
+import { ApiError } from '../../../interfaces/ApiError';
 
 @Component({
   selector: 'app-configure',
   templateUrl: './configure.component.html',
   styleUrls: ['./configure.component.css']
 })
+
 export class ConfigureComponent {
+  error = "";
   configuration: FormGroup = new FormGroup({
     name: new FormControl('',Validators.required),
     address: new FormControl('',Validators.required),
-    phone: new FormControl('',Validators.required),
+    phone: new FormControl('',[Validators.required,Validators.minLength(10),Validators.maxLength(10)]),
     sessionDuration: new FormControl(6,[Validators.required,Validators.min(1),Validators.max(12)]),
-    openTime: new FormControl('',Validators.required),
+    openTime: new FormControl('',[Validators.required]),
     closeTime: new FormControl('',Validators.required),
     classStart: new FormControl('',Validators.required),
     dinnerTime: new FormControl(60,[Validators.required,Validators.min(1),Validators.max(999)]),
@@ -26,8 +32,9 @@ export class ConfigureComponent {
     periodsBeforeDinner: new FormControl(1,[Validators.required,Validators.min(1),Validators.max(999)]),
     pauseTime: new FormControl(5,[Validators.required,Validators.min(1),Validators.max(999)])
   })
+  requestError: string = "";
 
-  constructor(private loadingService:LoadingService) { }
+  constructor(private router:Router,private loadingService:LoadingService,private requestService:RequestService ) { }
 
   uploadedFiles: any[] = []
   programList: Program[] = [];
@@ -173,7 +180,43 @@ export class ConfigureComponent {
     this.programListError = ''
     this.disabled = true
   }
-  save = () => {
+  isValid = () => {
+    let openTime:Date = new Date();
+    let closeTime:Date = new Date();
+    let classStartTime:Date = new Date();
+    let openTimeConf = this.configuration.get('openTime')?.value.split(":");
+    let closeTimeConf = this.configuration.get('closeTime')?.value.split(":");
+    let classTimeConf = this.configuration.get('classStart')?.value.split(":");
+    
+    let periodLength = parseFloat(this.configuration.get('periodsLength')?.value) / 60
+    let periodsPerDay = this.configuration.get('periodsPerDay')?.value;
+    let periodsBeforeDinner = parseInt(this.configuration.get('periodsBeforeDinner')?.value);
+    
+    openTime.setHours(parseInt(openTimeConf[0]), parseInt(openTimeConf[1]))
+    closeTime.setHours(parseInt(closeTimeConf[0]), parseInt(closeTimeConf[1]))
+    classStartTime.setHours(parseInt(classTimeConf[0]), parseInt(classTimeConf[1]))
+
+    let openHours = (closeTime.getHours() + closeTime.getMinutes() / 60) - (openTime.getHours() + openTime.getMinutes() / 60) 
+    let enoughHoursForPeriods = openHours >= periodLength * periodsPerDay
+    let validHours = openTime < closeTime && classStartTime < closeTime && classStartTime > openTime
+    let enoughPeriodsBeforeDinner = periodsBeforeDinner < periodsPerDay
+    if(!validHours){
+      this.error = "Les heures d'ouverture et de fermeture ne sont pas valides"
+      return false
+    } 
+    if(!enoughHoursForPeriods){
+      this.error = "Trop de periodes pour les heures d'ouvertures"
+      return false
+    } 
+    if(!enoughPeriodsBeforeDinner){
+      console.log(this.error);
+      this.error = "Trop de periodes avant le dinner"
+      return false
+    } 
+    this.error = ''
+    return this.configuration.valid && this.selectedDays.length > 0 && validHours && enoughHoursForPeriods && enoughPeriodsBeforeDinner
+  }
+  save = async () => {
     this.loadingService.startLoading()
     let establishment:Establishment = {
       name: this.configuration.get('name')?.value,
@@ -187,7 +230,7 @@ export class ConfigureComponent {
       periodsPerDay: this.configuration.get('periodsPerDay')?.value,
       periodsBeforeDinner: this.configuration.get('periodsBeforeDinner')?.value,
       betweenPeriodsLength: this.configuration.get('pauseTime')?.value,
-      periodLength: this.configuration.get('periodLength')?.value,
+      periodLength: this.configuration.get('periodsLength')?.value,
       daysPerWeek: this.selectedDays,
       programs: this.programList,
       id: "",
@@ -196,5 +239,52 @@ export class ConfigureComponent {
       teachers: [],
     }
     this.loadingService.stopLoading()
+
+    let response = await this.sendEstablishment(establishment)
+    if(response == undefined){
+      return;
+    }
+    if(this.programListError != '' && this.programList != undefined && this.programList.length > 0){
+      await this.sendPrograms(this.programList, establishment.id)
+    }
+    this.router.navigate(['/'])
+  }
+  sendEstablishment = async (establishment: Establishment):Promise<Establishment | undefined> => {
+    let result = await this.requestService.postRequest<Establishment>('admin/configureEstablishment', establishment);
+    if(isError(result)){
+      this.requestError = this.parseEstablishmentError(result as ApiError);
+      return undefined;
+    }
+    return (result as ApiResponse).data as Establishment;
+  }
+
+  sendPrograms = async (programs: Program[], establishmentId: string) => {
+    let result = await this.requestService.postRequest<Program[]>('admin/addProgramListToEstablishment/' + establishmentId, programs);
+    if(isError(result)){
+      this.requestError = this.parseProgramError(result as ApiError);
+      return;
+    }
+  }
+
+  parseProgramError = (error: ApiError):string => {
+    switch(error.status){
+      case 400:
+        return "Liste de programmes non valide"
+      case 500:
+        return "Internal server error"
+      default: 
+        return "Unknown error"
+    }
+  }
+  parseEstablishmentError = (error: ApiError):string => {
+    switch(error.status){
+      case 400:
+        return "Etablissement non valide"
+      case 500:
+        return "Internal server error"
+      default: 
+        return "Unknown error"
+    }
+      
   }
 }

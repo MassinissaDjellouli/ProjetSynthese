@@ -18,7 +18,7 @@
             </div>
             <div class="col-12 d-flex justify-content-center my-3">
                 <span class="p-float-label row col-12">
-                    <input id="phone" type="text" pInputText formControlName="phone">
+                    <input id="phone" type="text" pInputText formControlName="phone" maxlength="10">
                     <label for="phone">Numéro de téléphone de l'établissement</label>
                 </span>
             </div>
@@ -124,8 +124,11 @@
                     icon="pi pi-arrow-up"></p-scrollTop>
             </p-scrollPanel>
         </div>
+        <p *ngIf="error != '' && requestError == ''" class="text-danger text-center">{{error}}</p>
+        <p *ngIf="requestError != ''" class="text-danger text-center">{{requestError}}</p>
         <div class="justify-content-center d-flex">
-            <button pButton class="mt-4 px-5" (click)="save()">Sauvegarder</button>
+            <button pButton class="mt-4 px-5
+            " [disabled]="!isValid()" (click)="save()">Sauvegarder</button>
         </div>
     </p-card>
 </div>
