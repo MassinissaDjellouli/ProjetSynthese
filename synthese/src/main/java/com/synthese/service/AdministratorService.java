@@ -3,15 +3,18 @@ package com.synthese.service;
 import com.synthese.dto.EstablishmentDTO;
 import com.synthese.dto.LoginDTO;
 import com.synthese.exceptions.AdminNotFoundException;
+import com.synthese.exceptions.EstablishmentNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
 import com.synthese.exceptions.WrongPasswordException;
 import com.synthese.model.Administrator;
+import com.synthese.model.Establishment;
 import com.synthese.model.User;
 import com.synthese.repository.AdministratorRepository;
 import com.synthese.repository.EstablishmentRepository;
 import com.synthese.repository.UserRepository;
 import com.synthese.security.Roles;
 import lombok.AllArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -62,22 +65,29 @@ public class AdministratorService {
         if (!user.get().getPassword().equals(loginDTO.getPassword())) {
             throw new WrongPasswordException();
         }
-        Optional<Administrator> adminOpt = adminRepository.getByUserId(user.get().getId());
+        Optional<Administrator> adminOpt = adminRepository.findByUserId(user.get().getId());
         if (adminOpt.isEmpty()) {
             throw new AdminNotFoundException();
         }
         return adminOpt.get();
     }
 
-    public void configureEstablishment(EstablishmentDTO establishmentDTO) {
+    public ObjectId configureEstablishment(EstablishmentDTO establishmentDTO) {
         if (establishmentDTO.getId() != null && !establishmentDTO.getId().isEmpty()) {
-            updateEstablishment(establishmentDTO);
-            return;
+            return updateEstablishment(establishmentDTO);
         }
-        establishmentRepository.save(establishmentDTO.toModel());
+        return establishmentRepository.save(establishmentDTO.toModel()).getId();
     }
 
-    private void updateEstablishment(EstablishmentDTO establishmentDTO) {
+    private ObjectId updateEstablishment(EstablishmentDTO establishmentDTO) {
+        return null;
+    }
 
+    public Establishment getEstablishmentByAdminId(String id) throws EstablishmentNotFoundException {
+        Optional<Establishment> establishmentOptional = establishmentRepository.findByAdminId(new ObjectId(id));
+        if (establishmentOptional.isEmpty()) {
+            throw new EstablishmentNotFoundException();
+        }
+        return establishmentOptional.get();
     }
 }
