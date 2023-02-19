@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -157,7 +158,7 @@ public class AdministratorControllerTest {
 
     @Test
     public void getEstablishmentByAdminIdTestHappyDay() throws Exception {
-        when(administratorService.getEstablishmentByAdminId(anyString())).thenReturn(establishment);
+        when(administratorService.getEstablishmentByAdminId(anyString())).thenReturn(List.of(establishment));
         mockMvc.perform(get("/api/admin/getEstablishmentByAdminId/{id}", "342342")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))

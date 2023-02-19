@@ -18,6 +18,7 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -83,11 +84,11 @@ public class AdministratorService {
         return establishmentRepository.save(establishmentDTO.toModel()).getId();
     }
 
-    public Establishment getEstablishmentByAdminId(String id) throws EstablishmentNotFoundException {
-        Optional<Establishment> establishmentOptional = establishmentRepository.findByAdminId(new ObjectId(id));
+    public List<Establishment> getEstablishmentByAdminId(String id) throws EstablishmentNotFoundException {
+        List<Establishment> establishmentOptional = establishmentRepository.findByAdministratorsContaining(new ObjectId(id));
         if (establishmentOptional.isEmpty()) {
             throw new EstablishmentNotFoundException();
         }
-        return establishmentOptional.get();
+        return establishmentOptional;
     }
 }

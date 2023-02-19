@@ -22,7 +22,7 @@ public class Establishment {
     @Id
     private ObjectId id;
     @NotEmpty
-    private List<Administrator> administrators;
+    private List<ObjectId> administrators;
     @NotBlank
     private String address;
     @NotBlank

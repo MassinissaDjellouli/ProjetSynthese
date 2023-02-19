@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -183,21 +184,21 @@ public class AdministratorServiceTest {
 
     @Test
     public void getEstablishmentHappyDay() throws Exception {
-        when(establishmentRepository.findByAdminId(any())).thenReturn(Optional.of(Establishment.builder().build()));
+        when(establishmentRepository.findByAdministratorsContaining(any())).thenReturn(List.of(Establishment.builder().build()));
 
         administratorService.getEstablishmentByAdminId(administrator.getId().toString());
 
-        verify(establishmentRepository, times(1)).findByAdminId(any());
+        verify(establishmentRepository, times(1)).findByAdministratorsContaining(any());
     }
 
     @Test
     public void getEstablishmentNotFound() throws Exception {
-        when(establishmentRepository.findByAdminId(any())).thenReturn(Optional.empty());
+        when(establishmentRepository.findByAdministratorsContaining(any())).thenReturn(new ArrayList<>());
 
         try {
             administratorService.getEstablishmentByAdminId(administrator.getId().toString());
         } catch (EstablishmentNotFoundException e) {
-            verify(establishmentRepository, times(1)).findByAdminId(any());
+            verify(establishmentRepository, times(1)).findByAdministratorsContaining(any());
             return;
         }
         fail("Exception not thrown");

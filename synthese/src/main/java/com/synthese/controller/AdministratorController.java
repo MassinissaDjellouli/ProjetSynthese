@@ -8,12 +8,15 @@ import com.synthese.exceptions.AdminNotFoundException;
 import com.synthese.exceptions.EstablishmentNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
 import com.synthese.exceptions.WrongPasswordException;
+import com.synthese.model.Establishment;
 import com.synthese.service.AdministratorService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -46,9 +49,11 @@ public class AdministratorController {
     }
 
     @GetMapping("/getEstablishmentByAdminId/{id}")
-    public ResponseEntity<EstablishmentDTO> getEstablishmentByAdminId(@PathVariable String id) {
+    public ResponseEntity<List<EstablishmentDTO>> getEstablishmentByAdminId(@PathVariable String id) {
         try {
-            return ResponseEntity.ok().body(adminService.getEstablishmentByAdminId(id).toDTO());
+            return ResponseEntity.ok().body(adminService.getEstablishmentByAdminId(id)
+                    .stream().map(Establishment::toDTO).toList()
+            );
         } catch (EstablishmentNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
