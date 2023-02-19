@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface AdministratorRepository extends MongoRepository<Administrator, ObjectId> {
 
-    Optional<Administrator> getByUserId(ObjectId id);
+    Optional<Administrator> findByUserId(ObjectId id);
 
     Optional<Administrator> findByUsername(String username);
 }
