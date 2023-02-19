@@ -1,1 +1,4 @@
-export interface Manager{}
+export interface Manager{
+    id:string;    
+
+}
