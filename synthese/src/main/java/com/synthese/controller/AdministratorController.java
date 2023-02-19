@@ -1,9 +1,11 @@
 package com.synthese.controller;
 
 import com.synthese.dto.AdminstratorDTO;
+import com.synthese.dto.DataDTO;
 import com.synthese.dto.EstablishmentDTO;
 import com.synthese.dto.LoginDTO;
 import com.synthese.exceptions.AdminNotFoundException;
+import com.synthese.exceptions.EstablishmentNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
 import com.synthese.exceptions.WrongPasswordException;
 import com.synthese.service.AdministratorService;
@@ -34,11 +36,20 @@ public class AdministratorController {
     }
 
     @PostMapping("/configureEstablishment")
-    public ResponseEntity<EstablishmentDTO> configureEstablishment(@Valid @RequestBody EstablishmentDTO establishmentDTO) {
+    public ResponseEntity<DataDTO<String>> configureEstablishment(@Valid @RequestBody EstablishmentDTO establishmentDTO) {
         try {
-            adminService.configureEstablishment(establishmentDTO);
-            return ResponseEntity.ok().build();
+            String id = adminService.configureEstablishment(establishmentDTO).toString();
+            return ResponseEntity.ok().body(DataDTO.<String>builder().data(id).build());
         } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/getEstablishmentByAdminId/{id}")
+    public ResponseEntity<EstablishmentDTO> getEstablishmentByAdminId(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok().body(adminService.getEstablishmentByAdminId(id).toDTO());
+        } catch (EstablishmentNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
