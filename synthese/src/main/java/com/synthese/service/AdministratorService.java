@@ -80,7 +80,7 @@ public class AdministratorService {
     }
 
     private ObjectId updateEstablishment(EstablishmentDTO establishmentDTO) {
-        return null;
+        return establishmentRepository.save(establishmentDTO.toModel()).getId();
     }
 
     public Establishment getEstablishmentByAdminId(String id) throws EstablishmentNotFoundException {
