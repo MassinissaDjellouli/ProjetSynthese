@@ -25,6 +25,7 @@ public class Administrator {
 
     public AdminstratorDTO toDTO() {
         return AdminstratorDTO.builder()
+                .id(id.toString())
                 .firstName(firstName)
                 .lastName(lastName)
                 .username(username)
