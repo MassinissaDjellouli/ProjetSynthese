@@ -1,5 +1,6 @@
 package com.synthese.model;
 
+import com.synthese.dto.EstablishmentDTO;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -20,6 +21,8 @@ import java.util.List;
 public class Establishment {
     @Id
     private ObjectId id;
+    @NotEmpty
+    private List<Administrator> administrators;
     @NotBlank
     private String address;
     @NotBlank
@@ -51,4 +54,21 @@ public class Establishment {
     @NotBlank
     private String betweenPeriodsLength;
 
+    public EstablishmentDTO toDTO() {
+        return EstablishmentDTO.builder()
+                .id(id.toString())
+                .address(address)
+                .phone(phone)
+                .periodLength(periodLength)
+                .name(name)
+                .periodsPerDay(periodsPerDay)
+                .daysPerWeek(daysPerWeek)
+                .openTime(openTime)
+                .closeTime(closeTime)
+                .classesStartTime(classesStartTime)
+                .periodsBeforeDinner(periodsBeforeDinner)
+                .dinnerLength(dinnerLength)
+                .betweenPeriodsLength(betweenPeriodsLength)
+                .build();
+    }
 }
