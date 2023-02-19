@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface EstablishmentRepository extends MongoRepository<Establishment, ObjectId> {
     public Optional<Establishment> findById(ObjectId id);
+
+    Optional<Establishment> findByAdminId(ObjectId adminId);
 }
