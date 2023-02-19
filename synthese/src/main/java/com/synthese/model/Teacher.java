@@ -21,6 +21,7 @@ public class Teacher {
 
     public TeacherDTO toDTO() {
         return TeacherDTO.builder()
+                .id(id.toString())
                 .firstName(firstName)
                 .lastName(lastName)
                 .username(username)
