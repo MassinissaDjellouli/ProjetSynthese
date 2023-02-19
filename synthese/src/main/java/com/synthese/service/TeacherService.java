@@ -28,7 +28,7 @@ public class TeacherService {
         if (!user.get().getPassword().equals(loginDTO.getPassword())) {
             throw new WrongPasswordException();
         }
-        Optional<Teacher> teacherOpt = teacherRepository.getByUserId(user.get().getId());
+        Optional<Teacher> teacherOpt = teacherRepository.findByUserId(user.get().getId());
         if (teacherOpt.isEmpty()) {
             throw new TeacherNotFoundException();
         }

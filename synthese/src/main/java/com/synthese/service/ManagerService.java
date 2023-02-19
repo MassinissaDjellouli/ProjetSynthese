@@ -28,7 +28,7 @@ public class ManagerService {
         if (!user.get().getPassword().equals(loginDTO.getPassword())) {
             throw new WrongPasswordException();
         }
-        Optional<Manager> managerOpt = managerRepository.getByUserId(user.get().getId());
+        Optional<Manager> managerOpt = managerRepository.findByUserId(user.get().getId());
         if (managerOpt.isEmpty()) {
             throw new ManagerNotFoundException();
         }
