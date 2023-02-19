@@ -21,6 +21,7 @@ public class Student {
 
     public StudentDTO toDTO() {
         return StudentDTO.builder()
+                .id(id.toString())
                 .currentSession(currentSession)
                 .firstName(firstName)
                 .lastName(lastName)
