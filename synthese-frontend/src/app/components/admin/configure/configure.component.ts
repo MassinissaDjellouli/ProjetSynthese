@@ -9,6 +9,8 @@ import { RequestService, isError, parseError } from '../../../services/request/r
 import { ApiResponse } from 'src/app/interfaces/ApiResponse';
 import { Router } from '@angular/router';
 import { ApiError } from '../../../interfaces/ApiError';
+import { LoggedInService } from '../../../services/login/loggedIn/logged-in.service';
+import { Errors } from '../../../interfaces/ErrorsEnum';
 
 @Component({
   selector: 'app-configure',
@@ -34,7 +36,7 @@ export class ConfigureComponent {
   })
   requestError: string = "";
 
-  constructor(private router:Router,private loadingService:LoadingService,private requestService:RequestService ) { }
+  constructor(private router:Router,private loadingService:LoadingService,private requestService:RequestService, private loggedInService:LoggedInService) { }
 
   uploadedFiles: any[] = []
   programList: Program[] = [];
@@ -219,6 +221,7 @@ export class ConfigureComponent {
   save = async () => {
     this.loadingService.startLoading()
     let establishment:Establishment = {
+      id:undefined,
       name: this.configuration.get('name')?.value,
       address: this.configuration.get('address')?.value,
       phone: this.configuration.get('phone')?.value,
@@ -233,7 +236,7 @@ export class ConfigureComponent {
       periodLength: this.configuration.get('periodsLength')?.value,
       daysPerWeek: this.selectedDays,
       programs: this.programList,
-      id: "",
+      adminId: this.loggedInService.currentLoggedInUser!.userInfo.id,
       managers: [],
       students: [],
       teachers: [],
@@ -245,46 +248,24 @@ export class ConfigureComponent {
       return;
     }
     if(this.programListError != '' && this.programList != undefined && this.programList.length > 0){
-      await this.sendPrograms(this.programList, establishment.id)
+      await this.sendPrograms(this.programList, response)
     }
     this.router.navigate(['/'])
   }
-  sendEstablishment = async (establishment: Establishment):Promise<Establishment | undefined> => {
+  sendEstablishment = async (establishment: Establishment):Promise<string | undefined> => {
     let result = await this.requestService.postRequest<Establishment>('admin/configureEstablishment', establishment);
     if(isError(result)){
-      this.requestError = this.parseEstablishmentError(result as ApiError);
+      this.requestError = parseError(result as ApiError);
       return undefined;
     }
-    return (result as ApiResponse).data as Establishment;
+    return (result as ApiResponse).data as string;
   }
 
   sendPrograms = async (programs: Program[], establishmentId: string) => {
     let result = await this.requestService.postRequest<Program[]>('admin/addProgramListToEstablishment/' + establishmentId, programs);
     if(isError(result)){
-      this.requestError = this.parseProgramError(result as ApiError);
+      this.requestError = parseError(result as ApiError);
       return;
     }
-  }
-
-  parseProgramError = (error: ApiError):string => {
-    switch(error.status){
-      case 400:
-        return "Liste de programmes non valide"
-      case 500:
-        return "Internal server error"
-      default: 
-        return "Unknown error"
-    }
-  }
-  parseEstablishmentError = (error: ApiError):string => {
-    switch(error.status){
-      case 400:
-        return "Etablissement non valide"
-      case 500:
-        return "Internal server error"
-      default: 
-        return "Unknown error"
-    }
-      
   }
 }
