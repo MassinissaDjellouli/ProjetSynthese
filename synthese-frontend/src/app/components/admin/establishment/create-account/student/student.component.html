@@ -1,5 +1,29 @@
 <p-card>
     <ng-template pTemplate="header">
+        <h1 class="text-center bg-light-g p-3">Ajouter un étudiant</h1>
+    </ng-template>
+    <div class="row" [formGroup]="form">
+        <h3>Recherche:</h3>
+        <div class="col-6 d-flex justify-content-center my-3">
+            <span class="p-float-label row col-12">
+                <input id="lastName" type="text" pInputText formControlName="lastName">
+                <label for="lastName">Nom de l'étudiant</label>
+            </span>
+        </div>
+        <div class="col-6 d-flex justify-content-center my-3">
+            <span class="p-float-label row col-12">
+                <input id="firstName" type="text" pInputText formControlName="firstName">
+                <label for="firstName">Prénom de l'étudiant</label>
+            </span>
+        </div>
+        <div class="col-12 d-flex justify-content-center my-3">
+            <button pButton type="button" label="Trouver" (click)="search()"></button>
+        </div>
+    </div>
+</p-card>
+<h1 class="text-center my-2">OU</h1>
+<p-card class="mt-4">
+    <ng-template pTemplate="header">
         <h1 class="text-center bg-light-g p-3">Création d'un étudiant</h1>
     </ng-template>
     <div class="row" [formGroup]="form">
