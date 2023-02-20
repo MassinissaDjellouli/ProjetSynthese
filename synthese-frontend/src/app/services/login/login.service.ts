@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LoginType } from '../../interfaces/LoginType';
-import { isError, parseError, RequestService } from '../request/request.service';
+import { isError, parseError as parseError, RequestService } from '../request/request.service';
 import { ApiError } from '../../interfaces/ApiError';
 import { ApiResponse } from '../../interfaces/ApiResponse';
 import { Credentials } from 'src/app/interfaces/Credentials';
@@ -13,21 +13,21 @@ import { Roles } from '../../interfaces/Roles';
 })
 export class LoginService {
 
-  constructor(private reqService:RequestService, private loggedInService:LoggedInService){
+  constructor(private reqService: RequestService, private loggedInService: LoggedInService, private loadingService: LoadingService) {
     this.loginType = "Étudiant"
   }
-  error:string = ""
-  loginType:LoginType;
-  getRole = ():Roles => {
-    switch(this.loginType) {
+  error: string = ""
+  loginType: LoginType;
+  getRole = (): Roles => {
+    switch (this.loginType) {
       case "Étudiant":
-        return "Student";
+        return Roles.Student;
       case "Professeur":
-        return "Teacher";
+        return Roles.Teacher;
       case "Administrateur":
-        return "Admin";
+        return Roles.Admin;
       case "Gestionnaire":
-        return "Manager";
+        return Roles.Manager;
       default:
         throw new Error("Non-existant user type:" + this.loginType);
     }
