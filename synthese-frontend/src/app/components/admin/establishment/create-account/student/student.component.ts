@@ -40,4 +40,8 @@ export class CreateStudentComponent {
   getGeneratedUsername = () => {
     return this.generatedUsername;
   }
+
+  search = async () => {
+    
+  }
 }
