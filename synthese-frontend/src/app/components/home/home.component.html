@@ -4,9 +4,9 @@
         <app-login></app-login>
     </div>
     <div *ngIf="isLoggedIn() && currentUserRole() != undefined">
-        <app-teacher *ngIf="currentUserRole() == 'Teacher'"></app-teacher>
-        <app-admin *ngIf="currentUserRole() == 'Admin'"></app-admin>
-        <app-manager *ngIf="currentUserRole() == 'Manager'"></app-manager>
-        <app-student *ngIf="currentUserRole() == 'Student'"></app-student>
+        <app-teacher *ngIf="currentUserRole() == Roles.Teacher"></app-teacher>
+        <app-admin *ngIf="currentUserRole() == Roles.Admin"></app-admin>
+        <app-manager *ngIf="currentUserRole() == Roles.Manager"></app-manager>
+        <app-student *ngIf="currentUserRole() == Roles.Student"></app-student>
     </div>
 </div>
