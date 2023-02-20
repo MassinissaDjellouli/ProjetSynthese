@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="row">
+        <div class="col-6 p-4">
+            <p-card header="Modifier l'établissement">
+                Vous pouvez modifier l'établissement ici.
+                <ng-template pTemplate="footer">
+                    <p-button label="Modifier" icon="pi pi-wrench" iconPos="right"></p-button>
+                </ng-template>
+            </p-card>
+        </div>
+        <div class="col-6 p-4">
+            <p-card header="Ajouter un utilisateur à cet établissement">
+                Vous pouvez créer un compte pour un utilisateur ici ou assigner cet établissement à un compte existant.
+                <ng-template pTemplate="footer">
+                <button routerLink="createAccount/student" pButton type="button" label="Étudiant" class=" mx-2"></button>
+                <button routerLink="createAccount/teacher" pButton type="button" label="Enseignant" class="p-button-secondary mx-2"></button>
+                <button routerLink="createAccount/manager" pButton type="button" label="Gérant" class="p-button-outlined mx-2"></button>
+                </ng-template>
+            </p-card>
+        </div>
+    </div>    
+</div>
