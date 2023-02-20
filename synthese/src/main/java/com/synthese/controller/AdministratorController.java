@@ -68,4 +68,20 @@ public class AdministratorController {
         }
     }
 
+    @PostMapping("/updateEstablishment")
+    public ResponseEntity<?> updateEstablishment(@Valid @RequestBody EstablishmentDTO establishmentDTO) {
+        try {
+            String id = adminService.updateEstablishment(establishmentDTO).toString();
+            return ResponseEntity.ok().body(DataDTO.<String>builder().data(id).build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDTO
+                    .builder()
+                    .error(Errors.INVALID_ESTABLISHMENT)
+                    .build()
+            );
+        }
+    }
+
+//    @PostMapping("/createStudent")
+
 }
