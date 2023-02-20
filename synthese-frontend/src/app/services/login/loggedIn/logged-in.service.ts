@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { User } from 'src/app/interfaces/User';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +9,7 @@ export class LoggedInService {
 
   currentLoggedInUser:User|undefined;
 
-  constructor() { }
+  constructor(private router:Router) { }
 
   login = (user:User) => {
     this.currentLoggedInUser = user;
@@ -55,5 +56,7 @@ export class LoggedInService {
 
   logout = () => {
     this.currentLoggedInUser = undefined;
+    this.deleteCookie();
+    this.router.navigate(["/"]);
   }
 }
