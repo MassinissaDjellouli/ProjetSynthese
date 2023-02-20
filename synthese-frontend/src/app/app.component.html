@@ -1,5 +1,7 @@
 <navbar />
-<div *ngIf="loading()" class="text-center pt-5">
+<div [ngClass]="loading()" class="text-center pt-5">
     <p-progressSpinner [style]="{width: '150px', height: '150px'}" styleClass="custom-spinner" strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s"></p-progressSpinner>
 </div>
-<router-outlet *ngIf="!loading()"></router-outlet>
+<div [ngClass]="notLoading()">
+    <router-outlet></router-outlet>
+</div>

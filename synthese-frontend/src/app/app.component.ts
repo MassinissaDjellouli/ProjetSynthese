@@ -9,9 +9,14 @@ import { LoggedInService } from './services/login/loggedIn/logged-in.service';
 })
 export class AppComponent {
   title = 'synthese-frontend';
-  constructor(private loadingServ:LoadingService,private loggedInService:LoggedInService){
+  constructor(private loadingServ:LoadingService,loggedInService:LoggedInService){
       loggedInService.loginFromCookie();
   }
   
-  loading = this.loadingServ.isLoading
+  loading = () => {
+    return this.loadingServ.isLoading()? "d-block":"d-none";  
+  }
+  notLoading = () => {
+    return this.loadingServ.isLoading()? "d-none":"d-block";  
+  }
 }

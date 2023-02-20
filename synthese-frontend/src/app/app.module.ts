@@ -29,6 +29,11 @@ import {MultiSelectModule} from 'primeng/multiselect';
 
 import { ScrollTopModule } from "primeng/scrolltop";
 import { ScrollPanelModule } from "primeng/scrollpanel";
+import { EstablishmentComponent } from './components/admin/establishment/establishment.component';
+import { CreateAccountComponent } from './components/admin/establishment/create-account/create-account.component';
+import { CreateStudentComponent } from './components/admin/establishment/create-account/student/student.component';
+import { CreateTeacherComponent } from './components/admin/establishment/create-account/teacher/teacher.component';
+import { CreateManagerComponent } from './components/admin/establishment/create-account/manager/manager.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -39,7 +44,12 @@ import { ScrollPanelModule } from "primeng/scrollpanel";
     StudentComponent,
     TeacherComponent,
     ManagerComponent,
-    ConfigureComponent
+    ConfigureComponent,
+    EstablishmentComponent,
+    CreateAccountComponent,
+    CreateStudentComponent,
+    CreateTeacherComponent,
+    CreateManagerComponent
   ],
   imports: [
     BrowserModule,
