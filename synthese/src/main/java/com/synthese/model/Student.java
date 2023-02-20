@@ -13,11 +13,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 public class Student {
     private ObjectId id;
+    private ObjectId establishment;
     private ObjectId userId;
     private String firstName;
     private String lastName;
     private String username;
     private int currentSession;
+
 
     public StudentDTO toDTO() {
         return StudentDTO.builder()
