@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiError } from '../../interfaces/ApiError';
 import { ApiResponse } from 'src/app/interfaces/ApiResponse';
+import { Errors } from '../../interfaces/ErrorsEnum';
 
 @Injectable({
   providedIn: 'root'
@@ -26,12 +27,11 @@ export class RequestService {
       },
       body:JSON.stringify(body)
     })
-    console.log(res);
     
     if (res.ok) {
       return { data: await res.json() } as ApiResponse
     }
-    return { error: await res.text(), status:res.status } as ApiError
+    return await res.json() as ApiError
   }
 }
 export const isError = (res: ApiError | ApiResponse) => {
@@ -43,8 +43,11 @@ export const isError = (res: ApiError | ApiResponse) => {
 }
 export const parseError = (res:ApiError | ApiResponse) => {
   let err = (res as ApiError).error
-  if (err == undefined) {
+  let errors = Object.keys(Errors);
+  console.log(err);
+  
+  if (err == undefined || !errors.includes(err)) {
     err = "Unknown error"
   }
-  return err;
+  return Errors[err as keyof typeof Errors];
 }
