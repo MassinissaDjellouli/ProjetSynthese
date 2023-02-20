@@ -4,7 +4,8 @@ import { Student } from "./Student";
 import { Teacher } from "./Teacher";
 
 export interface Establishment {
-    id: string;
+    id: string | undefined;
+    adminId: string;
     name: string;
     address: string;
     phone: string;
