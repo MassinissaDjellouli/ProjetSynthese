@@ -1,0 +1,36 @@
+<p-card>
+    <ng-template pTemplate="header">
+        <h1 class="text-center bg-light-g p-3">Création d'un étudiant</h1>
+    </ng-template>
+    <div class="row" [formGroup]="form">
+        <div class="col-12 d-flex justify-content-center my-3">
+            <span class="p-float-label row col-12">
+                <input id="lastName" type="text" pInputText formControlName="lastName">
+                <label for="lastName">Nom de l'utilisateur</label>
+            </span>
+        </div>
+        <div class="col-12 d-flex justify-content-center my-3">
+            <span class="p-float-label row col-12">
+                <input id="firstName" type="text" pInputText formControlName="firstName">
+                <label for="firstName">Prénom de l'utilisateur</label>
+            </span>
+        </div>
+        <div class="col-12 d-flex justify-content-center my-3">
+            <span class="p-float-label row col-12">
+                <input id="usernameLength" type="number" min="6" max="12" pInputText formControlName="usernameLength">
+                <label for="usernameLength">Longueur du matricule</label>
+            </span>
+        </div>
+        <div class="col-12 d-flex justify-content-center my-3">
+            <span class="row col-12">
+                <p>Matricule de l'utilisateur: </p><strong>{{getGeneratedUsername()}}</strong>
+            </span>
+        </div>
+
+        <div class="col-12 d-flex justify-content-center my-3">
+            <span class="row col-12">
+                <p>Mot de passe généré: </p><strong>{{getGeneratedPassword()}}</strong>
+            </span>
+        </div>
+    </div>
+</p-card>
