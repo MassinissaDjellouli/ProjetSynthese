@@ -1,11 +1,11 @@
 package com.synthese.service;
 
 import com.synthese.dto.LoginDTO;
+import com.synthese.enums.Roles;
 import com.synthese.model.Student;
 import com.synthese.model.User;
 import com.synthese.repository.StudentRepository;
 import com.synthese.repository.UserRepository;
-import com.synthese.security.Roles;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -59,7 +61,7 @@ public class StudentServiceTest {
     @Test
     public void loginTestHappyDay() throws Exception {
         when(userRepository.findByUsernameAndRole(any(), any())).thenReturn(Optional.of(studentUser));
-        when(studentRepository.findByUserId(any())).thenReturn(Optional.of(student));
+        when(studentRepository.findByUserId(any())).thenReturn(List.of(student));
 
         studentService.login(loginDTO);
 
@@ -101,7 +103,7 @@ public class StudentServiceTest {
     @Test
     public void loginTestStudentNotFound() {
         when(userRepository.findByUsernameAndRole(any(), any())).thenReturn(Optional.of(studentUser));
-        when(studentRepository.findByUserId(any())).thenReturn(Optional.empty());
+        when(studentRepository.findByUserId(any())).thenReturn(new ArrayList<>());
 
         try {
             studentService.login(loginDTO);
