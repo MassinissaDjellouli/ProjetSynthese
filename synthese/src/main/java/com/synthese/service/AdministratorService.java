@@ -73,15 +73,14 @@ public class AdministratorService {
         return adminOpt.get();
     }
 
-    public ObjectId configureEstablishment(EstablishmentDTO establishmentDTO) {
-        if (establishmentDTO.getId() != null && !establishmentDTO.getId().isEmpty()) {
-            return updateEstablishment(establishmentDTO);
-        }
-        return establishmentRepository.save(establishmentDTO.toModel()).getId();
+    public ObjectId configureEstablishment(EstablishmentCreationDTO establishmentCreationDTO) {
+        Establishment establishment = establishmentCreationDTO.toModel();
+        establishment.setAdministrators(List.of(new ObjectId(establishmentCreationDTO.getAdminId())));
+        return establishmentRepository.save(establishment).getId();
     }
 
-    private ObjectId updateEstablishment(EstablishmentDTO establishmentDTO) {
-        return establishmentRepository.save(establishmentDTO.toModel()).getId();
+    public ObjectId updateEstablishment(EstablishmentDTO establishmentOutDTO) {
+        return establishmentRepository.save(establishmentOutDTO.toModel()).getId();
     }
 
     public List<Establishment> getEstablishmentByAdminId(String id) throws EstablishmentNotFoundException {
