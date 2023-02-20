@@ -1,5 +1,6 @@
 package com.synthese.service;
 
+import com.synthese.dto.EstablishmentCreationDTO;
 import com.synthese.dto.EstablishmentDTO;
 import com.synthese.dto.LoginDTO;
 import com.synthese.enums.Roles;

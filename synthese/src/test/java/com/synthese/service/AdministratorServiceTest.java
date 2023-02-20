@@ -1,6 +1,6 @@
 package com.synthese.service;
 
-import com.synthese.dto.EstablishmentDTO;
+import com.synthese.dto.EstablishmentCreationDTO;
 import com.synthese.dto.LoginDTO;
 import com.synthese.enums.Roles;
 import com.synthese.exceptions.AdminNotFoundException;
@@ -46,7 +46,7 @@ public class AdministratorServiceTest {
     private User adminUser;
     private LoginDTO loginDTO;
 
-    private EstablishmentDTO establishmentDTO;
+    private EstablishmentCreationDTO establishmentCreationDTO;
 
     @BeforeEach
     public void setup() {
@@ -68,7 +68,8 @@ public class AdministratorServiceTest {
                 .password("admin123")
                 .build();
 
-        establishmentDTO = EstablishmentDTO.builder()
+        establishmentCreationDTO = EstablishmentCreationDTO.builder()
+                .adminId("5f9f1b9b9c9d1b2b8c1c1c1c")
                 .address("test")
                 .name("test")
                 .phone("1234567890")
@@ -177,7 +178,7 @@ public class AdministratorServiceTest {
     @Test
     public void configureEstablishmentHappyDay() throws Exception {
         when(establishmentRepository.save(any())).thenReturn(Establishment.builder().id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c")).build());
-        administratorService.configureEstablishment(establishmentDTO);
+        administratorService.configureEstablishment(establishmentCreationDTO);
 
         verify(establishmentRepository, times(1)).save(any());
     }

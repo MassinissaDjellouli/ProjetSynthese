@@ -47,7 +47,7 @@ public class AdministratorControllerTest {
 
     LoginDTO loginDTO;
 
-    EstablishmentDTO establishmentDTO;
+    EstablishmentDTO establishmentOutDTO;
 
     Administrator administrator;
     Establishment establishment;
@@ -72,7 +72,7 @@ public class AdministratorControllerTest {
                 .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
                 .build();
 
-        establishmentDTO = EstablishmentDTO.builder()
+        establishmentOutDTO = EstablishmentDTO.builder()
                 .id(establishment.getId().toString())
                 .address("test")
                 .name("test")
@@ -142,17 +142,17 @@ public class AdministratorControllerTest {
         when(administratorService.configureEstablishment(any())).thenReturn(establishment.getId());
         mockMvc.perform(post("/api/admin/configureEstablishment")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
+                        .content(establishmentDTOJacksonTester.write(establishmentOutDTO).getJson()))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void configureEstablishmentTest404() throws Exception {
-        when(administratorService.configureEstablishment(any())).thenThrow(RuntimeException.class);
+    public void configureEstablishmentTest400() throws Exception {
+        when(administratorService.configureEstablishment(any())).thenThrow(NullPointerException.class);
         mockMvc.perform(post("/api/admin/configureEstablishment")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
-                .andExpect(status().isNotFound());
+                        .content(establishmentDTOJacksonTester.write(establishmentOutDTO).getJson()))
+                .andExpect(status().isBadRequest());
 
     }
 
@@ -161,7 +161,7 @@ public class AdministratorControllerTest {
         when(administratorService.getEstablishmentByAdminId(anyString())).thenReturn(List.of(establishment));
         mockMvc.perform(get("/api/admin/getEstablishmentByAdminId/{id}", "342342")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
+                        .content(establishmentDTOJacksonTester.write(establishmentOutDTO).getJson()))
                 .andExpect(status().isOk());
 
     }
@@ -171,7 +171,7 @@ public class AdministratorControllerTest {
         when(administratorService.getEstablishmentByAdminId(anyString())).thenThrow(EstablishmentNotFoundException.class);
         mockMvc.perform(get("/api/admin/getEstablishmentByAdminId/{id}", "342342")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
+                        .content(establishmentDTOJacksonTester.write(establishmentOutDTO).getJson()))
                 .andExpect(status().isNotFound());
 
     }
