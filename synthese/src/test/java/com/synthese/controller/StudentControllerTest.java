@@ -48,7 +48,6 @@ public class StudentControllerTest {
                 .build();
         student = Student.builder()
                 .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
-                .username("student123")
                 .firstName("student")
                 .lastName("student")
                 .build();
