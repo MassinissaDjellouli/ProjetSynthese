@@ -1,8 +1,40 @@
 <div class="container">
-    <h1 class="text-center">Votre établissement n'est pas encore configuré!</h1>
-    <div class="d-flex justify-content-center">
-        <a href="/configure">
-            <p-button label="Configurer un établissement" class="p-button-outline p-button-rounded p-button-success" ></p-button>
-        </a>
+    <h4 class="text-start">Bienvenue {{user.firstName + " " + user.lastName}}</h4>
+    <h1 class="text-center">Dashboard</h1>
+    <div *ngIf="!hasEstablishments()">
+        <h3 class="text-center text-danger">Vous n'avez aucun établissment configuré</h3>
+    </div>
+    <div *ngIf="hasEstablishments()" class="row d-flex justify-content-center">
+        <p-card *ngFor="let establishment of getEstablishments()" [header]="establishment.name"
+            subheader="Établissement scolaire" class="col-6 p-4">
+            <div class="row">
+                <div class="col-6">
+                    <strong class="d-inline">Adresse:</strong>
+                    <p class="d-inline"> {{establishment.address}}</p>
+                </div>
+                <div class="col-6 text-end">
+                    <strong class="d-inline">Numéro de telephone:</strong>
+                    <p class="d-inline"> {{establishment.phone}}</p>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-between">
+                <div class="col-6">
+                    <strong class="d-inline">Jours ouverts:</strong>
+                    <p class="d-inline"> {{getOpenDays(establishment.daysPerWeek)}}</p>
+                </div>
+                <div class="col-6 text-end">
+                    <strong class="d-inline">Heures d'ouvertures:</strong>
+                    <p class="d-inline"> {{getOpenHours(establishment.openTime,establishment.closeTime)}}</p>
+                </div>
+            </div>
+            <ng-template pTemplate="footer">
+                <p-button [routerLink]="'establishment/' + establishment.id" label="Gérer"
+                 icon="pi pi-wrench" iconPos="right"></p-button>
+            </ng-template>
+        </p-card>
+    </div>
+    <div class="d-flex justify-content-center mt-4">
+            <p-button label="Ajouter un établissement" routerLink="/configure"
+                class="p-button-outline p-button-rounded p-button-success" ></p-button>
     </div>
 </div>
