@@ -2,6 +2,7 @@ package com.synthese.service;
 
 import com.synthese.dto.EstablishmentDTO;
 import com.synthese.dto.LoginDTO;
+import com.synthese.enums.Roles;
 import com.synthese.exceptions.AdminNotFoundException;
 import com.synthese.exceptions.EstablishmentNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
@@ -12,7 +13,6 @@ import com.synthese.model.User;
 import com.synthese.repository.AdministratorRepository;
 import com.synthese.repository.EstablishmentRepository;
 import com.synthese.repository.UserRepository;
-import com.synthese.security.Roles;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;

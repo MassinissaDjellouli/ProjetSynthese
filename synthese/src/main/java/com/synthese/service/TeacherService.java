@@ -1,6 +1,7 @@
 package com.synthese.service;
 
 import com.synthese.dto.LoginDTO;
+import com.synthese.enums.Roles;
 import com.synthese.exceptions.TeacherNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
 import com.synthese.exceptions.WrongPasswordException;
@@ -8,7 +9,6 @@ import com.synthese.model.Teacher;
 import com.synthese.model.User;
 import com.synthese.repository.TeacherRepository;
 import com.synthese.repository.UserRepository;
-import com.synthese.security.Roles;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,11 +1,11 @@
 package com.synthese.service;
 
 import com.synthese.dto.LoginDTO;
+import com.synthese.enums.Roles;
 import com.synthese.model.Teacher;
 import com.synthese.model.User;
 import com.synthese.repository.TeacherRepository;
 import com.synthese.repository.UserRepository;
-import com.synthese.security.Roles;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.synthese.security;
+package com.synthese.enums;
 
 //import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.security.core.authority.SimpleGrantedAuthority;

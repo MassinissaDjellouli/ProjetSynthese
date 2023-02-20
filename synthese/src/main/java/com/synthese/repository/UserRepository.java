@@ -1,7 +1,7 @@
 package com.synthese.repository;
 
+import com.synthese.enums.Roles;
 import com.synthese.model.User;
-import com.synthese.security.Roles;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
