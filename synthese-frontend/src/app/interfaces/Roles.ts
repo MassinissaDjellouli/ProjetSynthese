@@ -1,1 +1,6 @@
-export type Roles = 'Admin' | 'Teacher' | 'Student' | 'Manager';
+export enum Roles{
+    Admin,
+    Teacher,
+    Student,
+    Manager
+}
