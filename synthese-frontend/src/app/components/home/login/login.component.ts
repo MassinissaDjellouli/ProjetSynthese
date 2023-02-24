@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { LoginService } from '../../../services/login/login.service';
 import { FormControl } from '@angular/forms';
 import { Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -11,8 +12,10 @@ import { Validators } from '@angular/forms';
 export class LoginComponent {
   username = new FormControl('',[Validators.required,Validators.minLength(6),Validators.maxLength(12)]);
   password = new FormControl('',[Validators.required,Validators.minLength(8)]);
-  constructor(private loginService:LoginService){
-
+  constructor(private loginService:LoginService,router: Router){
+    if(loginService.selectMultiple){
+      router.navigate(["/selectUser"]);
+    }
   }
   validate = () => {
     if(!this.username.valid){
