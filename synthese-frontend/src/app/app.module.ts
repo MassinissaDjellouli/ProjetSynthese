@@ -26,7 +26,7 @@ import { ConfigureComponent } from './components/admin/configure/configure.compo
 import {ScrollerModule} from 'primeng/scroller';
 import {SelectButtonModule} from 'primeng/selectbutton';
 import {MultiSelectModule} from 'primeng/multiselect';
-
+import {TableModule} from 'primeng/table';
 import { ScrollTopModule } from "primeng/scrolltop";
 import { ScrollPanelModule } from "primeng/scrollpanel";
 import { EstablishmentComponent } from './components/admin/establishment/establishment.component';
@@ -34,6 +34,9 @@ import { CreateAccountComponent } from './components/admin/establishment/create-
 import { CreateStudentComponent } from './components/admin/establishment/create-account/student/student.component';
 import { CreateTeacherComponent } from './components/admin/establishment/create-account/teacher/teacher.component';
 import { CreateManagerComponent } from './components/admin/establishment/create-account/manager/manager.component';
+import {ToastModule} from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { SelectUserPageComponent } from './components/home/login/select-user-page/select-user-page.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -49,7 +52,8 @@ import { CreateManagerComponent } from './components/admin/establishment/create-
     CreateAccountComponent,
     CreateStudentComponent,
     CreateTeacherComponent,
-    CreateManagerComponent
+    CreateManagerComponent,
+    SelectUserPageComponent
   ],
   imports: [
     BrowserModule,
@@ -71,9 +75,11 @@ import { CreateManagerComponent } from './components/admin/establishment/create-
     MultiSelectModule,
     BrowserAnimationsModule,
     ScrollTopModule,
-    ScrollPanelModule
+    ScrollPanelModule,
+    TableModule,
+    ToastModule
   ],
-  providers: [],
+  providers: [MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

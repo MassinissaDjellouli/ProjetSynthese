@@ -5,10 +5,12 @@ import { AdminComponent } from './components/admin/admin.component';
 import { ConfigureComponent } from './components/admin/configure/configure.component';
 import { EstablishmentComponent } from './components/admin/establishment/establishment.component';
 import { CreateAccountComponent } from './components/admin/establishment/create-account/create-account.component';
+import { SelectUserPageComponent } from './components/home/login/select-user-page/select-user-page.component';
 
 const routes: Routes = [
   //everyone routes
   { path: '', component: HomeComponent },
+  { path: 'selectUser', component: SelectUserPageComponent },
   //admin routes
   { path: 'configure', component: ConfigureComponent },
   { path: 'establishment/:id', component: EstablishmentComponent },
@@ -17,6 +19,7 @@ const routes: Routes = [
   //teacher routes
   //manager routes
 ];
+
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
