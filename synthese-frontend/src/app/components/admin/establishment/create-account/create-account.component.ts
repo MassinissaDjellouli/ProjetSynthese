@@ -12,15 +12,18 @@ import { LoadingService } from '../../../../services/loading/loading.service';
 export class CreateAccountComponent {
   userType:string = "";
   establishment:Establishment | undefined;
-  constructor(route:ActivatedRoute, private establishmentService: EstablishmentService,private loadingService:LoadingService) { 
+  constructor(router:Router,route:ActivatedRoute, establishmentService: EstablishmentService,loadingService:LoadingService) { 
     loadingService.startLoading();
     route.params.subscribe(params => {
       this.userType = params['type'];
-      console.log(params);
-      
+      this.establishment = establishmentService.getEstablishment(params['id']);
       loadingService.stopLoading();
+      if(this.establishment == undefined){
+        router.navigate(['/']);
+      }
     })
   }
+  hasEstablishment = () => this.establishment != undefined;
   getUserType = () => {
     console.log(this.userType);
     

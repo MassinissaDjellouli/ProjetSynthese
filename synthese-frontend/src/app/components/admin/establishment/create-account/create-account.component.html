@@ -1,8 +1,10 @@
 <div class="container">
-    <div [ngSwitch]="getUserType()">
-        <app-create-student *ngSwitchCase="'student'">output</app-create-student>
-        <app-create-teacher *ngSwitchCase="'teacher'">output</app-create-teacher>
-        <app-create-manager *ngSwitchCase="'manager'">output</app-create-manager>
-        <div *ngSwitchDefault></div>
+    <div *ngIf="hasEstablishment()">
+        <div [ngSwitch]="getUserType()">
+            <app-create-student [establishment]="establishment!" *ngSwitchCase="'student'">output</app-create-student>
+            <app-create-teacher [establishment]="establishment!" *ngSwitchCase="'teacher'">output</app-create-teacher>
+            <app-create-manager [establishment]="establishment!" *ngSwitchCase="'manager'">output</app-create-manager>
+            <div *ngSwitchDefault></div>
+        </div>
     </div>
 </div>
