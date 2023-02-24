@@ -3,14 +3,8 @@ package com.synthese.service;
 import com.synthese.dto.*;
 import com.synthese.enums.Roles;
 import com.synthese.exceptions.*;
-import com.synthese.model.Administrator;
-import com.synthese.model.Establishment;
-import com.synthese.model.Student;
-import com.synthese.model.User;
-import com.synthese.repository.AdministratorRepository;
-import com.synthese.repository.EstablishmentRepository;
-import com.synthese.repository.StudentRepository;
-import com.synthese.repository.UserRepository;
+import com.synthese.model.*;
+import com.synthese.repository.*;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
@@ -27,6 +21,8 @@ public class AdministratorService {
     private final UserRepository userRepository;
     private final EstablishmentRepository establishmentRepository;
     private final StudentRepository studentRepository;
+    private final ManagerRepository managerRepository;
+    private final TeacherRepository teacherRepository;
     private final String DEFAULT_ADMIN_PASSWORD = "12345678";
     private final String DEFAULT_ADMIN_USERNAME = "admin123";
 
@@ -90,7 +86,7 @@ public class AdministratorService {
         return establishmentOptional;
     }
 
-    public ObjectId createStudent(CreateStudentDTO studentCreationDTO) throws AlreadyExistingStudentException {
+    public ObjectId createStudent(CreateUserDTO studentCreationDTO) throws AlreadyExistingStudentException {
         Optional<User> userOpt = userRepository.findByUsernameAndRole(studentCreationDTO.getUsername(), Roles.STUDENT);
         if (userOpt.isPresent()) {
             return createStudentForExistingUser(studentCreationDTO, userOpt.get());
@@ -99,7 +95,7 @@ public class AdministratorService {
         return createStudentForExistingUser(studentCreationDTO, user);
     }
 
-    private ObjectId createStudentForExistingUser(CreateStudentDTO studentCreationDTO, User user) throws AlreadyExistingStudentException {
+    private ObjectId createStudentForExistingUser(CreateUserDTO studentCreationDTO, User user) throws AlreadyExistingStudentException {
         Optional<Student> studentOpt = studentRepository.findByUserIdAndEstablishment(
                 user.getId(),
                 new ObjectId(studentCreationDTO.getEstablishmentId()));
@@ -118,10 +114,88 @@ public class AdministratorService {
         return studentRepository.findByFirstNameAndLastName(firstName, lastName).stream().map(student -> {
             User user = userRepository.findById(student.getUserId()).orElseThrow();
             return StudentDTO.builder()
+                    .id(user.getId().toString())
                     .firstName(student.getFirstName())
                     .lastName(student.getLastName())
                     .username(user.getUsername())
+                    .establishmentId(student.getEstablishment().toString())
                     .build();
         }).toList();
+    }
+
+    public List<ManagerDTO> getManagersByName(String firstName, String lastName) {
+        return managerRepository.findByFirstNameAndLastName(firstName, lastName).stream().map(manager -> {
+            User user = userRepository.findById(manager.getUserId()).orElseThrow();
+            return ManagerDTO.builder()
+                    .id(user.getId().toString())
+                    .firstName(manager.getFirstName())
+                    .lastName(manager.getLastName())
+                    .username(user.getUsername())
+                    .establishmentId(manager.getEstablishment().toString())
+                    .build();
+        }).toList();
+    }
+
+    public List<TeacherDTO> getTeachersByName(String firstName, String lastName) {
+        return teacherRepository.findByFirstNameAndLastName(firstName, lastName).stream().map(teacher -> {
+            User user = userRepository.findById(teacher.getUserId()).orElseThrow();
+            return TeacherDTO.builder()
+                    .id(user.getId().toString())
+                    .firstName(teacher.getFirstName())
+                    .lastName(teacher.getLastName())
+                    .username(user.getUsername())
+                    .establishmentId(teacher.getEstablishment().toString())
+                    .build();
+        }).toList();
+    }
+
+    public ObjectId createTeacher(CreateUserDTO creationDTO) throws AlreadyExistingTeacherException {
+        Optional<User> userOpt = userRepository.findByUsernameAndRole(creationDTO.getUsername(), Roles.TEACHER);
+        if (userOpt.isPresent()) {
+            return createTeacherForExistingUser(creationDTO, userOpt.get());
+        }
+        User user = createNewUser(creationDTO.getUsername(), creationDTO.getPassword(), Roles.TEACHER);
+        return createTeacherForExistingUser(creationDTO, user);
+
+    }
+
+    private ObjectId createTeacherForExistingUser(CreateUserDTO creationDTO, User user) throws AlreadyExistingTeacherException {
+
+        Optional<Teacher> teacherOpt = teacherRepository.findByUserIdAndEstablishment(
+                user.getId(),
+                new ObjectId(creationDTO.getEstablishmentId()));
+        if (teacherOpt.isPresent()) {
+            throw new AlreadyExistingTeacherException();
+        }
+        return teacherRepository.save(Teacher.builder()
+                .userId(user.getId())
+                .establishment(new ObjectId(creationDTO.getEstablishmentId()))
+                .firstName(creationDTO.getFirstName())
+                .lastName(creationDTO.getLastName())
+                .build()).getId();
+    }
+
+    public ObjectId createManager(CreateUserDTO creationDTO) throws AlreadyExistingManagerException {
+        Optional<User> userOpt = userRepository.findByUsernameAndRole(creationDTO.getUsername(), Roles.MANAGER);
+        if (userOpt.isPresent()) {
+            return createManagerForExistingUser(creationDTO, userOpt.get());
+        }
+        User user = createNewUser(creationDTO.getUsername(), creationDTO.getPassword(), Roles.MANAGER);
+        return createManagerForExistingUser(creationDTO, user);
+    }
+
+    private ObjectId createManagerForExistingUser(CreateUserDTO creationDTO, User user) throws AlreadyExistingManagerException {
+        Optional<Manager> managerOpt = managerRepository.findByUserIdAndEstablishment(
+                user.getId(),
+                new ObjectId(creationDTO.getEstablishmentId()));
+        if (managerOpt.isPresent()) {
+            throw new AlreadyExistingManagerException();
+        }
+        return managerRepository.save(Manager.builder()
+                .userId(user.getId())
+                .establishment(new ObjectId(creationDTO.getEstablishmentId()))
+                .firstName(creationDTO.getFirstName())
+                .lastName(creationDTO.getLastName())
+                .build()).getId();
     }
 }
