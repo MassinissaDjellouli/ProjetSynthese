@@ -10,12 +10,16 @@ import { Establishment } from '../../interfaces/Establishment';
   styleUrls: ['./admin.component.css']
 })
 export class AdminComponent  {
+  user:Admin;
   constructor(
     private loggedInService:LoggedInService,
     private establishmentService:EstablishmentService) { 
+      this.user = this.loggedInService.currentLoggedInUser!.userInfo as Admin;
+      if(this.user == undefined){
+        this.loggedInService.logout();
+      }
       this.establishmentService.setEstablishments(this.user.id);
     }
-  user:Admin = this.loggedInService.currentLoggedInUser!.userInfo as Admin;
   getEstablishments = this.establishmentService.getEstablishments;
   hasEstablishments = () => {
     return this.establishmentService.getEstablishments().length > 0;
@@ -25,6 +29,9 @@ export class AdminComponent  {
   }
   getOpenHours = (openTime:string,closeTime:string):string => {
     return openTime.replace(":","h") + " - " + closeTime.replace(":","h");
+  }
+  getPhone = (phone:string) => {
+    return "(" + phone.substring(0,3) + ")-" + phone.substring(3,6) + "-" + phone.substring(6,10);
   }
 }
 

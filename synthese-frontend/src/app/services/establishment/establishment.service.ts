@@ -5,7 +5,7 @@ import { Establishment } from 'src/app/interfaces/Establishment';
 import { ApiResponse } from 'src/app/interfaces/ApiResponse';
 import { LoggedInService } from '../login/loggedIn/logged-in.service';
 import { Roles } from 'src/app/interfaces/Roles';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -13,17 +13,30 @@ import { ActivatedRoute } from '@angular/router';
 export class EstablishmentService implements AfterViewChecked{
   establishments:Establishment[] = [];
   error:string = "";
+  currentEstablishment:Establishment | undefined;
   constructor(    
     private loadingService:LoadingService,
     private requestService:RequestService,
-    private loggedInService:LoggedInService,
-    private route:ActivatedRoute) {
+    private loggedInService:LoggedInService) {
       if(this.loggedInService.currentLoggedInUser == undefined || this.loggedInService.currentLoggedInUser.role != Roles.Admin){
         return;
       }
      }
   ngAfterViewChecked(): void {
     this.setEstablishments(this.loggedInService.currentLoggedInUser!.userInfo.id);
+  }
+  getAllEstablishments = async () => {
+    try{
+      const res = await this.requestService.getRequest("establishments")
+      if(isError(res)){
+        this.error = parseError(res);
+        this.loadingService.stopLoading();
+        return [];
+      }
+      return (res as ApiResponse).data as Establishment[];
+    }catch{
+      return [];
+    }
   }
   setEstablishments = async (id:string) => {
     try{
@@ -50,5 +63,7 @@ export class EstablishmentService implements AfterViewChecked{
     }
   }
 
-
+  getEstablishment = (id:string):Establishment | undefined => {
+    return this.establishments.find(establishment => establishment.id == id);
+  }
 }
