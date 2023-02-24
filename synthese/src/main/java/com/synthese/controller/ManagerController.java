@@ -23,18 +23,18 @@ public class ManagerController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
         try {
-            return ResponseEntity.ok().body(managerService.login(loginDTO).toDTO());
+            return ResponseEntity.ok().body(managerService.login(loginDTO));
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorDTO
                     .builder()
-                    .error(Errors.MANAGER_NOT_FOUND)
+                    .error(Errors.INVALID_CREDENTIALS)
                     .build());
         } catch (ManagerNotFoundException e) {
             return ResponseEntity.unprocessableEntity().build();
         } catch (WrongPasswordException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorDTO
                     .builder()
-                    .error(Errors.WRONG_PASSWORD)
+                    .error(Errors.INVALID_CREDENTIALS)
                     .build());
         }
     }
