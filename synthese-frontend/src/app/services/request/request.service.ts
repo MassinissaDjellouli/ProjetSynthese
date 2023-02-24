@@ -47,7 +47,7 @@ export const parseError = (res:ApiError | ApiResponse) => {
   console.log(err);
   
   if (err == undefined || !errors.includes(err)) {
-    err = "Unknown error"
+    err = "UNKNOWN_ERROR"
   }
   return Errors[err as keyof typeof Errors];
 }
