@@ -1,0 +1,9 @@
+<div class="container" *ngIf="getEstablishments().length > 0">
+    <h3>Choix de l'établissement</h3>
+    <p-card class="m-3"
+     [header]="establishment.name" *ngFor="let establishment of getEstablishments()" >
+            <div class="p-col-12">
+                <button pButton type="button" label="Choisir" (click)="select(establishment)"></button>
+            </div>
+    </p-card>
+</div>

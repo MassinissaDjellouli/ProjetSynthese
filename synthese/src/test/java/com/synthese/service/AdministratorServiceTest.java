@@ -1,6 +1,6 @@
 package com.synthese.service;
 
-import com.synthese.dto.CreateStudentDTO;
+import com.synthese.dto.CreateUserDTO;
 import com.synthese.dto.EstablishmentCreationDTO;
 import com.synthese.dto.EstablishmentDTO;
 import com.synthese.dto.LoginDTO;
@@ -54,7 +54,7 @@ public class AdministratorServiceTest {
     private Student student2;
     private EstablishmentCreationDTO establishmentCreationDTO;
     private EstablishmentDTO establishmentDTO;
-    private CreateStudentDTO createStudentDTO;
+    private CreateUserDTO createUserDTO;
 
     @BeforeEach
     public void setup() {
@@ -149,7 +149,7 @@ public class AdministratorServiceTest {
                 .lastName("student")
                 .build();
 
-        createStudentDTO = CreateStudentDTO.builder()
+        createUserDTO = CreateUserDTO.builder()
                 .firstName("student")
                 .lastName("student")
                 .build();
@@ -281,14 +281,14 @@ public class AdministratorServiceTest {
 
     @Test
     public void createStudentForNewUserHappyDay() throws Exception {
-        createStudentDTO.setUsername("student");
-        createStudentDTO.setPassword("student");
-        createStudentDTO.setEstablishmentId(establishmentDTO.getId());
+        createUserDTO.setUsername("student");
+        createUserDTO.setPassword("student");
+        createUserDTO.setEstablishmentId(establishmentDTO.getId());
         when(userRepository.findByUsernameAndRole(any(), any())).thenReturn(Optional.empty());
         when(userRepository.save(any())).thenReturn(studentUser);
         when(studentRepository.save(any())).thenReturn(student1);
 
-        administratorService.createStudent(createStudentDTO);
+        administratorService.createStudent(createUserDTO);
 
         verify(userRepository, times(1)).findByUsernameAndRole(anyString(), any());
         verify(userRepository, times(1)).save(any());
@@ -297,13 +297,13 @@ public class AdministratorServiceTest {
 
     @Test
     public void createStudentForExistingUserHappyDay() throws Exception {
-        createStudentDTO.setUsername(studentUser.getUsername());
-        createStudentDTO.setPassword(studentUser.getPassword());
-        createStudentDTO.setEstablishmentId(establishmentDTO.getId());
+        createUserDTO.setUsername(studentUser.getUsername());
+        createUserDTO.setPassword(studentUser.getPassword());
+        createUserDTO.setEstablishmentId(establishmentDTO.getId());
         when(userRepository.findByUsernameAndRole(any(), any())).thenReturn(Optional.of(studentUser));
         when(studentRepository.save(any())).thenReturn(student2);
 
-        administratorService.createStudent(createStudentDTO);
+        administratorService.createStudent(createUserDTO);
 
         verify(userRepository, times(1)).findByUsernameAndRole(anyString(), any());
         verify(userRepository, times(0)).save(any());
@@ -312,13 +312,13 @@ public class AdministratorServiceTest {
 
     @Test
     public void createStudentForExistingUserAlreadyExists() {
-        createStudentDTO.setUsername(studentUser.getUsername());
-        createStudentDTO.setPassword(studentUser.getPassword());
-        createStudentDTO.setEstablishmentId(establishmentDTO.getId());
+        createUserDTO.setUsername(studentUser.getUsername());
+        createUserDTO.setPassword(studentUser.getPassword());
+        createUserDTO.setEstablishmentId(establishmentDTO.getId());
         when(userRepository.findByUsernameAndRole(any(), any())).thenReturn(Optional.of(studentUser));
         when(studentRepository.findByUserIdAndEstablishment(any(), any())).thenReturn(Optional.of(student1));
         try {
-            administratorService.createStudent(createStudentDTO);
+            administratorService.createStudent(createUserDTO);
         } catch (AlreadyExistingStudentException e) {
             verify(userRepository, times(1)).findByUsernameAndRole(anyString(), any());
             verify(studentRepository, times(1)).findByUserIdAndEstablishment(any(), any());
