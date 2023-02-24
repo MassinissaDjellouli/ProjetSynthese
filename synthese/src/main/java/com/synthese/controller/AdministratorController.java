@@ -27,14 +27,14 @@ public class AdministratorController {
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorDTO
                     .builder()
-                    .error(Errors.ADMIN_NOT_FOUND)
+                    .error(Errors.INVALID_CREDENTIALS)
                     .build());
         } catch (AdminNotFoundException e) {
             return ResponseEntity.unprocessableEntity().build();
         } catch (WrongPasswordException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorDTO
                     .builder()
-                    .error(Errors.WRONG_PASSWORD)
+                    .error(Errors.INVALID_CREDENTIALS)
                     .build());
         }
     }
@@ -82,9 +82,9 @@ public class AdministratorController {
     }
 
     @PostMapping("/createStudent")
-    public ResponseEntity<?> createStudent(@Valid @RequestBody CreateStudentDTO studentCreationDTO) {
+    public ResponseEntity<?> createStudent(@Valid @RequestBody CreateUserDTO creationDTO) {
         try {
-            String id = adminService.createStudent(studentCreationDTO).toString();
+            String id = adminService.createStudent(creationDTO).toString();
             return ResponseEntity.ok().body(DataDTO.<String>builder().data(id).build());
         } catch (AlreadyExistingStudentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDTO
@@ -95,11 +95,51 @@ public class AdministratorController {
         }
     }
 
+    @PostMapping("/createManager")
+    public ResponseEntity<?> createManager(@Valid @RequestBody CreateUserDTO creationDTO) {
+        try {
+            String id = adminService.createManager(creationDTO).toString();
+            return ResponseEntity.ok().body(DataDTO.<String>builder().data(id).build());
+        } catch (AlreadyExistingManagerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDTO
+                    .builder()
+                    .error(Errors.ALREADY_EXISTING_MANAGER)
+                    .build()
+            );
+        }
+    }
+
+    @PostMapping("/createTeacher")
+    public ResponseEntity<?> createTeacher(@Valid @RequestBody CreateUserDTO creationDTO) {
+        try {
+            String id = adminService.createTeacher(creationDTO).toString();
+            return ResponseEntity.ok().body(DataDTO.<String>builder().data(id).build());
+        } catch (AlreadyExistingTeacherException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDTO
+                    .builder()
+                    .error(Errors.ALREADY_EXISTING_TEACHER)
+                    .build()
+            );
+        }
+    }
+
     @GetMapping("/getStudentsByName/{firstName}/{lastName}")
-    public ResponseEntity<List<StudentDTO>> getStudentsForEstablishmentByFirstAndLastName(
+    public ResponseEntity<List<StudentDTO>> getStudentsByFirstAndLastName(
             @PathVariable String firstName, @PathVariable String lastName) {
         return ResponseEntity.ok().body(adminService.getStudentsByName(firstName, lastName));
     }
 
+
+    @GetMapping("/getManagersByName/{firstName}/{lastName}")
+    public ResponseEntity<List<ManagerDTO>> getManagersByFirstAndLastName(
+            @PathVariable String firstName, @PathVariable String lastName) {
+        return ResponseEntity.ok().body(adminService.getManagersByName(firstName, lastName));
+    }
+
+    @GetMapping("/getTeachersByName/{firstName}/{lastName}")
+    public ResponseEntity<List<TeacherDTO>> getTeachersByFirstAndLastName(
+            @PathVariable String firstName, @PathVariable String lastName) {
+        return ResponseEntity.ok().body(adminService.getTeachersByName(firstName, lastName));
+    }
 
 }
