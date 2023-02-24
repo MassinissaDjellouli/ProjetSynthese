@@ -1,6 +1,7 @@
 package com.synthese.service;
 
 import com.synthese.dto.LoginDTO;
+import com.synthese.dto.StudentDTO;
 import com.synthese.enums.Roles;
 import com.synthese.exceptions.StudentNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
@@ -21,7 +22,7 @@ public class StudentService {
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
 
-    public List<Student> login(LoginDTO loginDTO) throws UserNotFoundException, StudentNotFoundException, WrongPasswordException {
+    public List<StudentDTO> login(LoginDTO loginDTO) throws UserNotFoundException, StudentNotFoundException, WrongPasswordException {
         Optional<User> user = userRepository.findByUsernameAndRole(loginDTO.getUsername(), Roles.STUDENT);
         if (user.isEmpty()) {
             throw new UserNotFoundException();
@@ -33,6 +34,14 @@ public class StudentService {
         if (studentList.isEmpty()) {
             throw new StudentNotFoundException();
         }
-        return studentList;
+        return studentList.stream().map(student ->
+                StudentDTO.builder()
+                        .id(user.get().getId().toString())
+                        .firstName(student.getFirstName())
+                        .lastName(student.getLastName())
+                        .username(user.get().getUsername())
+                        .establishmentId(student.getEstablishment().toString())
+                        .build()
+        ).toList();
     }
 }

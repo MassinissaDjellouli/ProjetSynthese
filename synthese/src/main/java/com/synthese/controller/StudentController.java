@@ -6,7 +6,6 @@ import com.synthese.enums.Errors;
 import com.synthese.exceptions.StudentNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
 import com.synthese.exceptions.WrongPasswordException;
-import com.synthese.model.Student;
 import com.synthese.service.StudentService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -25,12 +24,12 @@ public class StudentController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
         try {
-            return ResponseEntity.ok().body(studentService.login(loginDTO).stream().map(Student::toDTO).toList());
+            return ResponseEntity.ok().body(studentService.login(loginDTO));
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ErrorDTO
                             .builder()
-                            .error(Errors.STUDENT_NOT_FOUND)
+                            .error(Errors.INVALID_CREDENTIALS)
                             .build());
         } catch (StudentNotFoundException e) {
             return ResponseEntity.unprocessableEntity().build();
@@ -38,7 +37,7 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ErrorDTO
                             .builder()
-                            .error(Errors.WRONG_PASSWORD)
+                            .error(Errors.INVALID_CREDENTIALS)
                             .build());
         }
     }
