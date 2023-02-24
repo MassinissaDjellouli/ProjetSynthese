@@ -13,4 +13,5 @@ public class StudentDTO {
     private String lastName;
     private String username;
     private int currentSession;
+    private String establishmentId;
 }

@@ -12,4 +12,5 @@ public class ManagerDTO {
     private String firstName;
     private String lastName;
     private String username;
+    private String establishmentId;
 }

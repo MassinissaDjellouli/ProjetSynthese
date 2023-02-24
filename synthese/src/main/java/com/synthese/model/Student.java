@@ -25,8 +25,10 @@ public class Student {
 
 
     public StudentDTO toDTO() {
+        System.out.println("id: " + id.toString());
         return StudentDTO.builder()
                 .id(id.toString())
+                .establishmentId(establishment.toString())
                 .currentSession(currentSession)
                 .firstName(firstName)
                 .lastName(lastName)

@@ -17,6 +17,7 @@ public class Teacher {
     private String firstName;
     private String lastName;
     private String username;
+    private ObjectId establishment;
 
 
     public TeacherDTO toDTO() {

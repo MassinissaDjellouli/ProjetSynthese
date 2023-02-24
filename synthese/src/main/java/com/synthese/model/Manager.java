@@ -19,6 +19,7 @@ public class Manager {
     private String firstName;
     private String lastName;
     private String username;
+    private ObjectId establishment;
 
     public ManagerDTO toDTO() {
         return ManagerDTO.builder()
