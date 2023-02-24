@@ -1,9 +1,10 @@
 export enum Errors{
-    STUDENT_NOT_FOUND = "Aucun étudiant trouvé avec ce matricule",
-    TEACHER_NOT_FOUND = "Aucun professeur trouvé avec ce matricule",
-    MANAGER_NOT_FOUND = "Aucun gestionnaire trouvé avec ce matricule",
-    ADMIN_NOT_FOUND = "Aucun administrateur trouvé avec ce matricule",
+    INVALID_CREDENTIALS = "Identifiants invalides",
     WRONG_PASSWORD = "Mot de passe invalide",
     NO_ESTABLISHMENTS = "Aucun établissement trouvé",
     INVALID_ESTABLISHMENT = "Établissement invalide",
+    UNKNOWN_ERROR = "Erreur inconnue",
+    ALREADY_EXISTING_STUDENT = "Cet élève existe déjà sur cet établissement",
+    ALREADY_EXISTING_MANAGER = "Ce gestionnaire existe déjà sur cet établissement",
+    ALREADY_EXISTING_TEACHER = "Ce professeur existe déjà sur cet établissement"    
 }
