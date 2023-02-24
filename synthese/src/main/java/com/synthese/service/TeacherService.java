@@ -1,6 +1,7 @@
 package com.synthese.service;
 
 import com.synthese.dto.LoginDTO;
+import com.synthese.dto.TeacherDTO;
 import com.synthese.enums.Roles;
 import com.synthese.exceptions.TeacherNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
@@ -12,6 +13,7 @@ import com.synthese.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,7 +22,7 @@ public class TeacherService {
     private final UserRepository userRepository;
     private final TeacherRepository teacherRepository;
 
-    public Teacher login(LoginDTO loginDTO) throws UserNotFoundException, WrongPasswordException, TeacherNotFoundException {
+    public List<TeacherDTO> login(LoginDTO loginDTO) throws UserNotFoundException, WrongPasswordException, TeacherNotFoundException {
         Optional<User> user = userRepository.findByUsernameAndRole(loginDTO.getUsername(), Roles.TEACHER);
         if (user.isEmpty()) {
             throw new UserNotFoundException();
@@ -28,10 +30,18 @@ public class TeacherService {
         if (!user.get().getPassword().equals(loginDTO.getPassword())) {
             throw new WrongPasswordException();
         }
-        Optional<Teacher> teacherOpt = teacherRepository.findByUserId(user.get().getId());
-        if (teacherOpt.isEmpty()) {
+        List<Teacher> teacherList = teacherRepository.findByUserId(user.get().getId());
+        if (teacherList.isEmpty()) {
             throw new TeacherNotFoundException();
         }
-        return teacherOpt.get();
+        return teacherList.stream().map(teacher ->
+                TeacherDTO.builder()
+                        .id(user.get().getId().toString())
+                        .firstName(teacher.getFirstName())
+                        .lastName(teacher.getLastName())
+                        .username(user.get().getUsername())
+                        .establishmentId(teacher.getEstablishment().toString())
+                        .build()
+        ).toList();
     }
 }
