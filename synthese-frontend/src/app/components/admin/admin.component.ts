@@ -3,6 +3,7 @@ import { Admin } from '../../interfaces/Admin';
 import { EstablishmentService } from '../../services/establishment/establishment.service';
 import { LoggedInService } from '../../services/login/loggedIn/logged-in.service';
 import { Establishment } from '../../interfaces/Establishment';
+import { getOpenDays, getOpenHours, getPhone } from 'src/app/utils/establishmentUtil';
 
 @Component({
   selector: 'app-admin',
@@ -24,15 +25,10 @@ export class AdminComponent  {
   hasEstablishments = () => {
     return this.establishmentService.getEstablishments().length > 0;
   }
-  getOpenDays = (openDays:string[]):string => {
-    return openDays.flatMap(day => day.substring(0,3).toUpperCase()).join(", ");
-  }
-  getOpenHours = (openTime:string,closeTime:string):string => {
-    return openTime.replace(":","h") + " - " + closeTime.replace(":","h");
-  }
-  getPhone = (phone:string) => {
-    return "(" + phone.substring(0,3) + ")-" + phone.substring(3,6) + "-" + phone.substring(6,10);
-  }
+  getOpenHours = getOpenHours
+  getOpenDays = getOpenDays
+  getPhone = getPhone
+
 }
 
 
