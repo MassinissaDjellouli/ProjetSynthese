@@ -67,7 +67,7 @@ public class AdministratorController {
         }
     }
 
-    @PostMapping("/updateEstablishment")
+    @PutMapping("/updateEstablishment")
     public ResponseEntity<?> updateEstablishment(@Valid @RequestBody EstablishmentDTO establishmentDTO) {
         try {
             String id = adminService.updateEstablishment(establishmentDTO).toString();
