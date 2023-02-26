@@ -33,6 +33,21 @@ export class RequestService {
     }
     return await res.json() as ApiError
   }
+
+  putRequest = async <T> (endpoint: string, body:T): Promise<ApiResponse | ApiError> => {
+    const res = await fetch(this.apiLink + endpoint,{
+      method:"PUT",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body:JSON.stringify(body)
+    })
+    
+    if (res.ok) {
+      return { data: await res.json() } as ApiResponse
+    }
+    return await res.json() as ApiError
+  }
 }
 export const isError = (res: ApiError | ApiResponse) => {
   try {
