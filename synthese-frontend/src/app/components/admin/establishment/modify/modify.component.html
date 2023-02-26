@@ -1,0 +1,42 @@
+<div class="container" *ngIf="establishment != undefined">
+    <p-card header="Modifier l'établissement">
+        <p>Nom: {{establishment.name}}    
+            <p-button class="p-button-sm" *ngIf="!modifiedFields!.get('name')" label="Modifier" class="col-6"></p-button>
+        </p>
+        <p>Numero de telephone: {{getPhone(establishment.phone)}}
+            <p-button class="p-button-sm" *ngIf="!modifiedFields!.get(' phone')" label="Modifier" class="col-6"></p-button>
+        <p>Adresse: {{establishment.address}}
+            <p-button class="p-button-sm" *ngIf="!modifiedFields!.get('')" label="Modifier" class="col-6"></p-button>
+        </p>
+        <p>Longueur d'une session: {{establishment.sessionLength}} mois
+            <p-button class="p-button-sm" *ngIf="!modifiedFields!.get('sessionLength')" label="Modifier" class="col-6"></p-button>
+        </p>
+        <p>Longueur d'une période: {{establishment.periodLength}} min
+            <p-button class="p-button-sm" *ngIf="!modifiedFields!.get('periodLength')" label="Modifier" class="col-6"></p-button>
+        </p>
+        <p>Nombre de périodes par jour: {{establishment.periodsPerDay}}
+            <p-button class="p-button-sm" *ngIf="!modifiedFields!.get('periodsPerDay')" label="Modifier" class="col-6"></p-button>
+        </p>
+        <p>Jours par semaine: {{getOpenDays(establishment.daysPerWeek)}}
+            <p-button class="p-button-sm" *ngIf="!modifiedFields!.get('daysPerWeek')" label="Modifier" class="col-6"></p-button>
+        </p>
+        <p>Heures d'ouverture: {{getOpenTime(establishment.openTime,establishment.closeTime)}}
+            <p-button class="p-button-sm" *ngIf="!modifiedFields!.get('openTime') || !modifiedFields!.get('closeTime') " label="Modifier" class="col-6"></p-button>
+        </p>
+        <p>Heure de début des cours: {{getClassStartTime(establishment.classesStartTime)}}
+            <p-button class="p-button-sm" *ngIf="!modifiedFields!.get('classesStartTime')" label="Modifier" class="col-6"></p-button>
+        </p>
+        <p>Nombre de périodes avant dinner: {{establishment.periodsBeforeDinner}}
+            <p-button class="p-button-sm" *ngIf="!modifiedFields!.get('periodsBeforeDinner')" label="Modifier" class="col-6"></p-button>
+        </p>
+        <p>Longueur du dinner: {{establishment.dinnerLength}} min
+            <p-button class="p-button-sm" *ngIf="!modifiedFields!.get('dinnerLength')" label="Modifier" class="col-6"></p-button>
+        </p>
+        <p>Pause entre les périodes: {{establishment.betweenPeriodsLength}} min
+            <p-button class="p-button-sm" *ngIf="!modifiedFields!.get('betweenPeriodsLength')" label="Modifier" class="col-6"></p-button>
+        </p>
+    </p-card>
+    <div class="d-flex my-3 justify-content-center" >
+        <p-button [disabled]="modifiedEstablishment == undefined || isModified()" label="Modifier"></p-button>
+    </div>
+</div>
