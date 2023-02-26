@@ -40,6 +40,9 @@ export class EstablishmentService implements AfterViewChecked{
   }
   setEstablishments = async (id:string) => {
     try{
+      if(this.loggedInService.currentLoggedInUser?.userInfo.id != id || this.loggedInService.currentLoggedInUser?.role != Roles.Admin){
+        return
+      }
       this.establishments = await this.fetchEstablishments(id);
     }catch{}
   }
