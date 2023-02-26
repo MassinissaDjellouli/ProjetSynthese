@@ -241,8 +241,7 @@ export class ConfigureComponent {
       students: [],
       teachers: [],
     }
-    this.loadingService.stopLoading()
-
+    
     let response = await this.sendEstablishment(establishment)
     if(response == undefined){
       return;
@@ -250,6 +249,7 @@ export class ConfigureComponent {
     if(this.programListError != '' && this.programList != undefined && this.programList.length > 0){
       await this.sendPrograms(this.programList, response)
     }
+    this.loadingService.stopLoading()
     this.router.navigate(['/'])
   }
   sendEstablishment = async (establishment: Establishment):Promise<string | undefined> => {

@@ -37,6 +37,7 @@ import { CreateManagerComponent } from './components/admin/establishment/create-
 import {ToastModule} from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { SelectUserPageComponent } from './components/home/login/select-user-page/select-user-page.component';
+import { ModifyComponent } from './components/admin/establishment/modify/modify.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,7 +54,8 @@ import { SelectUserPageComponent } from './components/home/login/select-user-pag
     CreateStudentComponent,
     CreateTeacherComponent,
     CreateManagerComponent,
-    SelectUserPageComponent
+    SelectUserPageComponent,
+    ModifyComponent
   ],
   imports: [
     BrowserModule,

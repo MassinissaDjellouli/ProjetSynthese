@@ -6,6 +6,7 @@ import { ConfigureComponent } from './components/admin/configure/configure.compo
 import { EstablishmentComponent } from './components/admin/establishment/establishment.component';
 import { CreateAccountComponent } from './components/admin/establishment/create-account/create-account.component';
 import { SelectUserPageComponent } from './components/home/login/select-user-page/select-user-page.component';
+import { ModifyComponent } from './components/admin/establishment/modify/modify.component';
 
 const routes: Routes = [
   //everyone routes
@@ -15,6 +16,7 @@ const routes: Routes = [
   { path: 'configure', component: ConfigureComponent },
   { path: 'establishment/:id', component: EstablishmentComponent },
   { path: 'establishment/:id/createAccount/:type', component: CreateAccountComponent },
+  { path: 'establishment/:id/modify', component:ModifyComponent}
   //student routes
   //teacher routes
   //manager routes
