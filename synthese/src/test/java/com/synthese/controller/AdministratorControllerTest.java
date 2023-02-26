@@ -1,12 +1,11 @@
 package com.synthese.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.synthese.dto.CreateUserDTO;
 import com.synthese.dto.EstablishmentDTO;
 import com.synthese.dto.LoginDTO;
 import com.synthese.exceptions.*;
-import com.synthese.model.Administrator;
-import com.synthese.model.Establishment;
-import com.synthese.model.Student;
+import com.synthese.model.*;
 import com.synthese.service.AdministratorService;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,8 +26,7 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,6 +42,7 @@ public class AdministratorControllerTest {
     JacksonTester<LoginDTO> loginDTOJacksonTester;
 
     JacksonTester<EstablishmentDTO> establishmentDTOJacksonTester;
+    JacksonTester<CreateUserDTO> createUserDTOJacksonTester;
 
     LoginDTO loginDTO;
 
@@ -53,6 +52,12 @@ public class AdministratorControllerTest {
     Establishment establishment;
     Student student1;
     Student student2;
+    Teacher teacher1;
+    Teacher teacher2;
+    Manager manager1;
+    Manager manager2;
+
+    CreateUserDTO createUserDTO;
 
     @BeforeEach
     public void setup() {
@@ -111,6 +116,41 @@ public class AdministratorControllerTest {
                 .establishment(new ObjectId(establishmentDTO.getId()))
                 .firstName("student2")
                 .lastName("student2")
+                .build();
+
+        teacher1 = Teacher.builder()
+                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
+                .establishment(new ObjectId(establishmentDTO.getId()))
+                .firstName("teacher1")
+                .lastName("teacher1")
+                .build();
+
+        teacher2 = Teacher.builder()
+                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
+                .establishment(new ObjectId(establishmentDTO.getId()))
+                .firstName("teacher2")
+                .lastName("teacher2")
+                .build();
+
+        manager1 = Manager.builder()
+                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
+                .establishment(new ObjectId(establishmentDTO.getId()))
+                .firstName("manager1")
+                .lastName("manager1")
+                .build();
+
+        manager2 = Manager.builder()
+                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
+                .establishment(new ObjectId(establishmentDTO.getId()))
+                .firstName("manager2")
+                .lastName("manager2")
+                .build();
+        createUserDTO = CreateUserDTO.builder()
+                .establishmentId("5f9f1b9b9c9d1b2b8c1c1c1c")
+                .firstName("name")
+                .lastName("name")
+                .password("password")
+                .username("username")
                 .build();
 
         mockMvc = MockMvcBuilders.standaloneSetup(administratorController).build();
@@ -195,7 +235,7 @@ public class AdministratorControllerTest {
     @Test
     public void updateEstablishmentTestHappyDay() throws Exception {
         when(administratorService.updateEstablishment(any())).thenReturn(establishment.getId());
-        mockMvc.perform(post("/api/admin/updateEstablishment")
+        mockMvc.perform(put("/api/admin/updateEstablishment")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
                 .andExpect(status().isOk());
@@ -204,7 +244,7 @@ public class AdministratorControllerTest {
     @Test
     public void updateEstablishmentTest400() throws Exception {
         when(administratorService.updateEstablishment(any())).thenThrow(NullPointerException.class);
-        mockMvc.perform(post("/api/admin/updateEstablishment")
+        mockMvc.perform(put("/api/admin/updateEstablishment")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
                 .andExpect(status().isBadRequest());
@@ -215,7 +255,7 @@ public class AdministratorControllerTest {
         when(administratorService.createStudent(any())).thenReturn(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"));
         mockMvc.perform(post("/api/admin/createStudent")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
+                        .content(createUserDTOJacksonTester.write(createUserDTO).getJson()))
                 .andExpect(status().isOk());
     }
 
@@ -224,10 +264,45 @@ public class AdministratorControllerTest {
         when(administratorService.createStudent(any())).thenThrow(AlreadyExistingStudentException.class);
         mockMvc.perform(post("/api/admin/createStudent")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
+                        .content(createUserDTOJacksonTester.write(createUserDTO).getJson()))
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    public void createManagerTestHappyDay() throws Exception {
+        when(administratorService.createManager(any())).thenReturn(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"));
+        mockMvc.perform(post("/api/admin/createManager")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createUserDTOJacksonTester.write(createUserDTO).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void createManagerTest400() throws Exception {
+        when(administratorService.createManager(any())).thenThrow(AlreadyExistingManagerException.class);
+        mockMvc.perform(post("/api/admin/createManager")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createUserDTOJacksonTester.write(createUserDTO).getJson()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void createTeacherTestHappyDay() throws Exception {
+        when(administratorService.createTeacher(any())).thenReturn(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"));
+        mockMvc.perform(post("/api/admin/createTeacher")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createUserDTOJacksonTester.write(createUserDTO).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void createTeacherTest400() throws Exception {
+        when(administratorService.createTeacher(any())).thenThrow(AlreadyExistingTeacherException.class);
+        mockMvc.perform(post("/api/admin/createTeacher")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createUserDTOJacksonTester.write(createUserDTO).getJson()))
+                .andExpect(status().isBadRequest());
+    }
     @Test
     public void getStudentByNameHappyDay() throws Exception {
         when(administratorService.getStudentsByName(anyString(), anyString())).thenReturn
@@ -260,6 +335,82 @@ public class AdministratorControllerTest {
                 .thenReturn(List.of());
         mockMvc.perform(get("/api/admin/getStudentsByName/{firstName}/{lastName}/",
                         "student1", "student1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(0)));
+    }
+
+@Test
+    public void getTeacherByNameHappyDay() throws Exception {
+        when(administratorService.getTeachersByName(anyString(), anyString())).thenReturn
+                (List.of(teacher1.toDTO()));
+        mockMvc.perform(get("/api/admin/getTeachersByName/{firstName}/{lastName}",
+                        "teacher1", "teacher1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(1)));
+    }
+
+    @Test
+    public void getMultipleTeachersByNameHappyDay() throws Exception {
+        teacher2.setFirstName("teacher1");
+        teacher2.setLastName("teacher1");
+        when(administratorService.getTeachersByName(anyString(), anyString())).thenReturn
+                (List.of(teacher1.toDTO(), teacher2.toDTO()));
+        mockMvc.perform(get("/api/admin/getTeachersByName/{firstName}/{lastName}/",
+                        "teacher1", "teacher1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(2)));
+    }
+
+    @Test
+    public void getTeacherByNameNoTeachers() throws Exception {
+        when(administratorService.getTeachersByName(anyString(), anyString()))
+                .thenReturn(List.of());
+        mockMvc.perform(get("/api/admin/getTeachersByName/{firstName}/{lastName}/",
+                        "teacher1", "teacher1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(0)));
+    }
+
+    @Test
+    public void getManagerByNameHappyDay() throws Exception {
+        when(administratorService.getManagersByName(anyString(), anyString())).thenReturn
+                (List.of(manager1.toDTO()));
+        mockMvc.perform(get("/api/admin/getManagersByName/{firstName}/{lastName}",
+                        "manager1", "manager1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(1)));
+    }
+
+    @Test
+    public void getMultipleManagersByNameHappyDay() throws Exception {
+        manager2.setFirstName("manager1");
+        manager2.setLastName("manager1");
+        when(administratorService.getManagersByName(anyString(), anyString())).thenReturn
+                (List.of(manager1.toDTO(), manager2.toDTO()));
+        mockMvc.perform(get("/api/admin/getManagersByName/{firstName}/{lastName}/",
+                        "manager1", "manager1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(2)));
+    }
+
+    @Test
+    public void getManagerByNameNoManagers() throws Exception {
+        when(administratorService.getManagersByName(anyString(), anyString()))
+                .thenReturn(List.of());
+        mockMvc.perform(get("/api/admin/getManagersByName/{firstName}/{lastName}/",
+                        "manager1", "manager1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
                 .andExpect(status().isOk())

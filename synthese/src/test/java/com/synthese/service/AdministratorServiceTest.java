@@ -1,19 +1,10 @@
 package com.synthese.service;
 
-import com.synthese.dto.CreateUserDTO;
-import com.synthese.dto.EstablishmentCreationDTO;
-import com.synthese.dto.EstablishmentDTO;
-import com.synthese.dto.LoginDTO;
+import com.synthese.dto.*;
 import com.synthese.enums.Roles;
 import com.synthese.exceptions.*;
-import com.synthese.model.Administrator;
-import com.synthese.model.Establishment;
-import com.synthese.model.Student;
-import com.synthese.model.User;
-import com.synthese.repository.AdministratorRepository;
-import com.synthese.repository.EstablishmentRepository;
-import com.synthese.repository.StudentRepository;
-import com.synthese.repository.UserRepository;
+import com.synthese.model.*;
+import com.synthese.repository.*;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,8 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -45,13 +35,23 @@ public class AdministratorServiceTest {
     @Mock
     private StudentRepository studentRepository;
     @Mock
+    private TeacherRepository teacherRepository;
+    @Mock
+    private ManagerRepository managerRepository;
+    @Mock
     private EstablishmentRepository establishmentRepository;
     private Administrator administrator;
     private User adminUser;
     private LoginDTO loginDTO;
     private User studentUser;
+    private User teacherUser;
+    private User managerUser;
     private Student student1;
     private Student student2;
+    private Teacher teacher1;
+    private Teacher teacher2;
+    private Manager manager1;
+    private Manager manager2;
     private EstablishmentCreationDTO establishmentCreationDTO;
     private EstablishmentDTO establishmentDTO;
     private CreateUserDTO createUserDTO;
@@ -133,6 +133,20 @@ public class AdministratorServiceTest {
                 .role(Roles.STUDENT)
                 .build();
 
+        teacherUser = User.builder()
+                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
+                .username("teacher123")
+                .password("teacher123")
+                .role(Roles.TEACHER)
+                .build();
+
+        managerUser = User.builder()
+                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
+                .username("manager123")
+                .password("manager123")
+                .role(Roles.MANAGER)
+                .build();
+
         student1 = Student.builder()
                 .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c54"))
                 .userId(studentUser.getId())
@@ -147,6 +161,38 @@ public class AdministratorServiceTest {
                 .establishment(new ObjectId(establishmentDTO.getId()))
                 .firstName("student")
                 .lastName("student")
+                .build();
+
+        teacher1 = Teacher.builder()
+                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c54"))
+                .userId(teacherUser.getId())
+                .establishment(new ObjectId("ffffffffffffffffffffffff"))
+                .firstName("teacher")
+                .lastName("teacher")
+                .build();
+
+        teacher2 = Teacher.builder()
+                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c53"))
+                .userId(teacherUser.getId())
+                .establishment(new ObjectId(establishmentDTO.getId()))
+                .firstName("teacher")
+                .lastName("teacher")
+                .build();
+
+        manager1 = Manager.builder()
+                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c54"))
+                .userId(managerUser.getId())
+                .establishment(new ObjectId("ffffffffffffffffffffffff"))
+                .firstName("manager")
+                .lastName("manager")
+                .build();
+
+        manager2 = Manager.builder()
+                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c53"))
+                .userId(managerUser.getId())
+                .establishment(new ObjectId(establishmentDTO.getId()))
+                .firstName("manager")
+                .lastName("manager")
                 .build();
 
         createUserDTO = CreateUserDTO.builder()
@@ -327,5 +373,199 @@ public class AdministratorServiceTest {
             return;
         }
         fail("Exception not thrown");
+    }
+
+    @Test
+    public void createTeacherForNewUserHappyDay() throws Exception {
+        createUserDTO.setUsername("teacher");
+        createUserDTO.setPassword("teacher");
+        createUserDTO.setEstablishmentId(establishmentDTO.getId());
+        when(userRepository.findByUsernameAndRole(any(), any())).thenReturn(Optional.empty());
+        when(userRepository.save(any())).thenReturn(teacherUser);
+        when(teacherRepository.save(any())).thenReturn(teacher1);
+
+        administratorService.createTeacher(createUserDTO);
+
+        verify(userRepository, times(1)).findByUsernameAndRole(anyString(), any());
+        verify(userRepository, times(1)).save(any());
+        verify(teacherRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void createTeacherForExistingUserHappyDay() throws Exception {
+        createUserDTO.setUsername(teacherUser.getUsername());
+        createUserDTO.setPassword(teacherUser.getPassword());
+        createUserDTO.setEstablishmentId(establishmentDTO.getId());
+        when(userRepository.findByUsernameAndRole(any(), any())).thenReturn(Optional.of(teacherUser));
+        when(teacherRepository.save(any())).thenReturn(teacher2);
+
+        administratorService.createTeacher(createUserDTO);
+
+        verify(userRepository, times(1)).findByUsernameAndRole(anyString(), any());
+        verify(userRepository, times(0)).save(any());
+        verify(teacherRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void createTeacherForExistingUserAlreadyExists() {
+        createUserDTO.setUsername(teacherUser.getUsername());
+        createUserDTO.setPassword(teacherUser.getPassword());
+        createUserDTO.setEstablishmentId(establishmentDTO.getId());
+        when(userRepository.findByUsernameAndRole(any(), any())).thenReturn(Optional.of(teacherUser));
+        when(teacherRepository.findByUserIdAndEstablishment(any(), any())).thenReturn(Optional.of(teacher1));
+        try {
+            administratorService.createTeacher(createUserDTO);
+        } catch (AlreadyExistingTeacherException e) {
+            verify(userRepository, times(1)).findByUsernameAndRole(anyString(), any());
+            verify(teacherRepository, times(1)).findByUserIdAndEstablishment(any(), any());
+            verify(userRepository, times(0)).save(any());
+            verify(teacherRepository, times(0)).save(any());
+            return;
+        }
+        fail("Exception not thrown");
+    }
+
+    @Test
+    public void createManagerForNewUserHappyDay() throws Exception {
+        createUserDTO.setUsername("manager");
+        createUserDTO.setPassword("manager");
+        createUserDTO.setEstablishmentId(establishmentDTO.getId());
+        when(userRepository.findByUsernameAndRole(any(), any())).thenReturn(Optional.empty());
+        when(userRepository.save(any())).thenReturn(managerUser);
+        when(managerRepository.save(any())).thenReturn(manager1);
+
+        administratorService.createManager(createUserDTO);
+
+        verify(userRepository, times(1)).findByUsernameAndRole(anyString(), any());
+        verify(userRepository, times(1)).save(any());
+        verify(managerRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void createManagerForExistingUserHappyDay() throws Exception {
+        createUserDTO.setUsername(managerUser.getUsername());
+        createUserDTO.setPassword(managerUser.getPassword());
+        createUserDTO.setEstablishmentId(establishmentDTO.getId());
+        when(userRepository.findByUsernameAndRole(any(), any())).thenReturn(Optional.of(managerUser));
+        when(managerRepository.save(any())).thenReturn(manager2);
+
+        administratorService.createManager(createUserDTO);
+
+        verify(userRepository, times(1)).findByUsernameAndRole(anyString(), any());
+        verify(userRepository, times(0)).save(any());
+        verify(managerRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void createManagerForExistingUserAlreadyExists() {
+        createUserDTO.setUsername(managerUser.getUsername());
+        createUserDTO.setPassword(managerUser.getPassword());
+        createUserDTO.setEstablishmentId(establishmentDTO.getId());
+        when(userRepository.findByUsernameAndRole(any(), any())).thenReturn(Optional.of(managerUser));
+        when(managerRepository.findByUserIdAndEstablishment(any(), any())).thenReturn(Optional.of(manager1));
+        try {
+            administratorService.createManager(createUserDTO);
+        } catch (AlreadyExistingManagerException e) {
+            verify(userRepository, times(1)).findByUsernameAndRole(anyString(), any());
+            verify(managerRepository, times(1)).findByUserIdAndEstablishment(any(), any());
+            verify(userRepository, times(0)).save(any());
+            verify(managerRepository, times(0)).save(any());
+            return;
+        }
+        fail("Exception not thrown");
+    }
+
+    @Test
+    public void getStudentByNamesHappyDay() {
+        when(studentRepository.findByFirstNameAndLastName(any(), any()))
+                .thenReturn(List.of(student1));
+        when(userRepository.findById(any())).thenReturn(Optional.of(studentUser));
+        List<StudentDTO> studentDTO = administratorService.getStudentsByName(student1.getFirstName(), student1.getLastName());
+        assertEquals(studentDTO.get(0).getFirstName(), student1.getFirstName());
+        assertEquals(studentDTO.get(0).getLastName(), student1.getLastName());
+        verify(studentRepository, times(1)).findByFirstNameAndLastName(any(), any());
+        assertEquals(studentDTO.size(), 1);
+    }
+
+    @Test
+    public void getStudentByNamesNotFound() {
+        when(studentRepository.findByFirstNameAndLastName(any(), any()))
+                .thenReturn(List.of());
+        List<StudentDTO> studentDTO = administratorService.getStudentsByName(student1.getFirstName(), student1.getLastName());
+        verify(studentRepository, times(1)).findByFirstNameAndLastName(any(), any());
+        assertEquals(studentDTO.size(), 0);
+    }
+
+    @Test
+    public void getStudentByNamesUserNotFound() {
+        when(studentRepository.findByFirstNameAndLastName(any(), any()))
+                .thenReturn(List.of(student1));
+        when(userRepository.findById(any())).thenReturn(Optional.empty());
+        List<StudentDTO> studentDTO = administratorService.getStudentsByName(student1.getFirstName(), student1.getLastName());
+        verify(studentRepository, times(1)).findByFirstNameAndLastName(any(), any());
+        assertEquals(studentDTO.size(), 0);
+    }
+
+    @Test
+    public void getTeacherByNamesHappyDay() {
+        when(teacherRepository.findByFirstNameAndLastName(any(), any()))
+                .thenReturn(List.of(teacher1));
+        when(userRepository.findById(any())).thenReturn(Optional.of(teacherUser));
+        List<TeacherDTO> teacherDTO = administratorService.getTeachersByName(teacher1.getFirstName(), teacher1.getLastName());
+        assertEquals(teacherDTO.get(0).getFirstName(), teacher1.getFirstName());
+        assertEquals(teacherDTO.get(0).getLastName(), teacher1.getLastName());
+        verify(teacherRepository, times(1)).findByFirstNameAndLastName(any(), any());
+        assertEquals(teacherDTO.size(), 1);
+    }
+
+    @Test
+    public void getTeacherByNamesNotFound() {
+        when(teacherRepository.findByFirstNameAndLastName(any(), any()))
+                .thenReturn(List.of());
+        List<TeacherDTO> teacherDTO = administratorService.getTeachersByName(teacher1.getFirstName(), teacher1.getLastName());
+        verify(teacherRepository, times(1)).findByFirstNameAndLastName(any(), any());
+        assertEquals(teacherDTO.size(), 0);
+    }
+
+    @Test
+    public void getTeacherByNamesUserNotFound() {
+        when(teacherRepository.findByFirstNameAndLastName(any(), any()))
+                .thenReturn(List.of(teacher1));
+        when(userRepository.findById(any())).thenReturn(Optional.empty());
+        List<TeacherDTO> teacherDTO = administratorService.getTeachersByName(teacher1.getFirstName(), teacher1.getLastName());
+        verify(teacherRepository, times(1)).findByFirstNameAndLastName(any(), any());
+        assertEquals(teacherDTO.size(), 0);
+    }
+
+    @Test
+    public void getManagerByNamesHappyDay() {
+        when(managerRepository.findByFirstNameAndLastName(any(), any()))
+                .thenReturn(List.of(manager1));
+        when(userRepository.findById(any())).thenReturn(Optional.of(managerUser));
+        List<ManagerDTO> managerDTO = administratorService.getManagersByName(manager1.getFirstName(), manager1.getLastName());
+        assertEquals(managerDTO.get(0).getFirstName(), manager1.getFirstName());
+        assertEquals(managerDTO.get(0).getLastName(), manager1.getLastName());
+        verify(managerRepository, times(1)).findByFirstNameAndLastName(any(), any());
+        assertEquals(managerDTO.size(), 1);
+    }
+
+    @Test
+    public void getManagerByNamesNotFound() {
+        when(managerRepository.findByFirstNameAndLastName(any(), any()))
+                .thenReturn(List.of());
+        List<ManagerDTO> managerDTO = administratorService.getManagersByName(manager1.getFirstName(), manager1.getLastName());
+        verify(managerRepository, times(1)).findByFirstNameAndLastName(any(), any());
+        assertEquals(managerDTO.size(), 0);
+    }
+
+    @Test
+    public void getManagerByNameUserNotFound() {
+        when(managerRepository.findByFirstNameAndLastName(any(), any()))
+                .thenReturn(List.of(manager1));
+        when(userRepository.findById(any())).thenReturn(Optional.empty());
+        List<ManagerDTO> managerDTO = administratorService.getManagersByName(manager1.getFirstName(), manager1.getLastName());
+        verify(managerRepository, times(1)).findByFirstNameAndLastName(any(), any());
+        verify(userRepository, times(1)).findById(any());
+        assertEquals(managerDTO.size(), 0);
     }
 }
