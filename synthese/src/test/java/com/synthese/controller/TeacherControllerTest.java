@@ -2,6 +2,7 @@ package com.synthese.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synthese.dto.LoginDTO;
+import com.synthese.dto.TeacherDTO;
 import com.synthese.exceptions.TeacherNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
 import com.synthese.exceptions.WrongPasswordException;
@@ -18,6 +19,8 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,7 +35,7 @@ public class TeacherControllerTest {
     private TeacherService teacherService;
 
     private LoginDTO loginDTO;
-    private Teacher teacher;
+    private TeacherDTO teacherDTO;
 
     private JacksonTester<LoginDTO> loginDTOJacksonTester;
     private JacksonTester<Teacher> teacherJacksonTester;
@@ -43,8 +46,8 @@ public class TeacherControllerTest {
                 .username("teacher123")
                 .password("teacher123")
                 .build();
-        teacher = Teacher.builder()
-                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
+        teacherDTO = TeacherDTO.builder()
+                .id("5f9f1b9b9c9d1b2b8c1c1c1c")
                 .username("teacher123")
                 .firstName("teacher")
                 .lastName("teacher")
@@ -57,7 +60,7 @@ public class TeacherControllerTest {
 
     @Test
     public void loginTestHappyDay() throws Exception {
-        when(teacherService.login(any())).thenReturn(teacher);
+        when(teacherService.login(any())).thenReturn(List.of(teacherDTO));
 
         mockMvc.perform(post("/api/teacher/login")
                         .contentType("application/json")

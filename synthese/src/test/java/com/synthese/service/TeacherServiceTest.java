@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -39,11 +41,13 @@ public class TeacherServiceTest {
         teacher = Teacher.builder()
                 .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
                 .username("teacher123")
+                .establishment(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
                 .firstName("teacher")
                 .lastName("teacher")
                 .build();
 
         teacherUser = User.builder()
+                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
                 .username("teacher123")
                 .password("teacher123")
                 .role(Roles.TEACHER)
@@ -58,7 +62,7 @@ public class TeacherServiceTest {
     @Test
     public void loginTestHappyDay() throws Exception {
         when(userRepository.findByUsernameAndRole(anyString(), any())).thenReturn(Optional.of(teacherUser));
-        when(teacherRepository.findByUserId(any())).thenReturn(Optional.of(teacher));
+        when(teacherRepository.findByUserId(any())).thenReturn(List.of(teacher));
 
         teacherService.login(loginDTO);
 
@@ -99,7 +103,7 @@ public class TeacherServiceTest {
     @Test
     public void loginTestTeacherNotFound() {
         when(userRepository.findByUsernameAndRole(anyString(), any())).thenReturn(Optional.of(teacherUser));
-        when(teacherRepository.findByUserId(any())).thenReturn(Optional.empty());
+        when(teacherRepository.findByUserId(any())).thenReturn(new ArrayList<>());
 
         try {
             teacherService.login(loginDTO);

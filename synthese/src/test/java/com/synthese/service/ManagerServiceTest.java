@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -39,11 +41,13 @@ public class ManagerServiceTest {
         manager = Manager.builder()
                 .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
                 .username("manager123")
+                .establishment(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
                 .firstName("manager")
                 .lastName("manager")
                 .build();
 
         managerUser = User.builder()
+                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
                 .username("manager123")
                 .password("manager123")
                 .role(Roles.MANAGER)
@@ -58,7 +62,7 @@ public class ManagerServiceTest {
     @Test
     public void loginTestHappyDay() throws Exception {
         when(userRepository.findByUsernameAndRole(any(), any())).thenReturn(Optional.of(managerUser));
-        when(managerRepository.findByUserId(any())).thenReturn(Optional.of(manager));
+        when(managerRepository.findByUserId(any())).thenReturn(List.of(manager));
 
         managerService.login(loginDTO);
 
@@ -98,7 +102,7 @@ public class ManagerServiceTest {
     @Test
     public void loginTestManagerNotFound() throws Exception {
         when(userRepository.findByUsernameAndRole(any(), any())).thenReturn(Optional.of(managerUser));
-        when(managerRepository.findByUserId(any())).thenReturn(Optional.empty());
+        when(managerRepository.findByUserId(any())).thenReturn(new ArrayList<>());
 
         try {
             managerService.login(loginDTO);

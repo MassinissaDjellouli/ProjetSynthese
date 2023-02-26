@@ -2,6 +2,7 @@ package com.synthese.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synthese.dto.LoginDTO;
+import com.synthese.dto.StudentDTO;
 import com.synthese.exceptions.StudentNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
 import com.synthese.exceptions.WrongPasswordException;
@@ -35,7 +36,7 @@ public class StudentControllerTest {
     private StudentService studentService;
 
     private LoginDTO loginDTO;
-    private Student student;
+    private StudentDTO studentDto;
 
     private JacksonTester<LoginDTO> loginDTOJacksonTester;
     private JacksonTester<Student> studentJacksonTester;
@@ -46,8 +47,8 @@ public class StudentControllerTest {
                 .username("student123")
                 .password("student123")
                 .build();
-        student = Student.builder()
-                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
+        studentDto = StudentDTO.builder()
+                .id("5f9f1b9b9c9d1b2b8c1c1c1c")
                 .firstName("student")
                 .lastName("student")
                 .build();
@@ -58,7 +59,7 @@ public class StudentControllerTest {
 
     @Test
     public void loginTestHappyDay() throws Exception {
-        when(studentService.login(any())).thenReturn(List.of(student));
+        when(studentService.login(any())).thenReturn(List.of(studentDto));
         mockMvc.perform(post("/api/student/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginDTOJacksonTester.write(loginDTO).getJson()))

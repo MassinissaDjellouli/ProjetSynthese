@@ -2,6 +2,7 @@ package com.synthese.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synthese.dto.LoginDTO;
+import com.synthese.dto.ManagerDTO;
 import com.synthese.exceptions.ManagerNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
 import com.synthese.exceptions.WrongPasswordException;
@@ -19,6 +20,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,7 +36,7 @@ public class ManagerControllerTest {
     @Mock
     private ManagerService managerService;
     private LoginDTO loginDTO;
-    private Manager manager;
+    private ManagerDTO managerDTO;
     private JacksonTester<LoginDTO> loginDTOJacksonTester;
     private JacksonTester<Manager> managerJacksonTester;
 
@@ -43,8 +46,8 @@ public class ManagerControllerTest {
                 .username("manager123")
                 .password("manager123")
                 .build();
-        manager = Manager.builder()
-                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
+        managerDTO = ManagerDTO.builder()
+                .id("5f9f1b9b9c9d1b2b8c1c1c1c")
                 .username("manager123")
                 .firstName("manager")
                 .lastName("manager")
@@ -58,7 +61,7 @@ public class ManagerControllerTest {
 
     @Test
     public void loginTestHappyDay() throws Exception {
-        when(managerService.login(any())).thenReturn(manager);
+        when(managerService.login(any())).thenReturn(List.of(managerDTO));
         mockMvc.perform(post("/api/manager/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginDTOJacksonTester.write(loginDTO).getJson()))

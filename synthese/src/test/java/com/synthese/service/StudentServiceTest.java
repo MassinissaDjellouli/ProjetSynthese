@@ -42,9 +42,11 @@ public class StudentServiceTest {
                 .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
                 .firstName("student")
                 .lastName("student")
+                .establishment(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
                 .build();
 
         studentUser = User.builder()
+                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))
                 .username("student123")
                 .password("student123")
                 .role(Roles.STUDENT)
