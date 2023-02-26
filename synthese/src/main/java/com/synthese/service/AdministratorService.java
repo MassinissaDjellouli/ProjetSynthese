@@ -10,6 +10,7 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -111,42 +112,54 @@ public class AdministratorService {
     }
 
     public List<StudentDTO> getStudentsByName(String firstName, String lastName) {
-        return studentRepository.findByFirstNameAndLastName(firstName, lastName).stream().map(student -> {
-            User user = userRepository.findById(student.getUserId()).orElseThrow();
-            return StudentDTO.builder()
-                    .id(user.getId().toString())
-                    .firstName(student.getFirstName())
-                    .lastName(student.getLastName())
-                    .username(user.getUsername())
-                    .establishmentId(student.getEstablishment().toString())
-                    .build();
-        }).toList();
+        try{
+            return studentRepository.findByFirstNameAndLastName(firstName, lastName).stream().map(student -> {
+                User user = userRepository.findById(student.getUserId()).orElseThrow();
+                return StudentDTO.builder()
+                        .id(user.getId().toString())
+                        .firstName(student.getFirstName())
+                        .lastName(student.getLastName())
+                        .username(user.getUsername())
+                        .establishmentId(student.getEstablishment().toString())
+                        .build();
+            }).toList();
+        }catch (Exception e){
+            return new ArrayList<>();
+        }
     }
 
     public List<ManagerDTO> getManagersByName(String firstName, String lastName) {
-        return managerRepository.findByFirstNameAndLastName(firstName, lastName).stream().map(manager -> {
-            User user = userRepository.findById(manager.getUserId()).orElseThrow();
-            return ManagerDTO.builder()
-                    .id(user.getId().toString())
-                    .firstName(manager.getFirstName())
-                    .lastName(manager.getLastName())
-                    .username(user.getUsername())
-                    .establishmentId(manager.getEstablishment().toString())
-                    .build();
-        }).toList();
+        try{
+            return managerRepository.findByFirstNameAndLastName(firstName, lastName).stream().map(manager -> {
+                User user = userRepository.findById(manager.getUserId()).orElseThrow();
+                return ManagerDTO.builder()
+                        .id(user.getId().toString())
+                        .firstName(manager.getFirstName())
+                        .lastName(manager.getLastName())
+                        .username(user.getUsername())
+                        .establishmentId(manager.getEstablishment().toString())
+                        .build();
+            }).toList();
+            }catch (Exception e){
+                return new ArrayList<>();
+            }
     }
 
     public List<TeacherDTO> getTeachersByName(String firstName, String lastName) {
-        return teacherRepository.findByFirstNameAndLastName(firstName, lastName).stream().map(teacher -> {
-            User user = userRepository.findById(teacher.getUserId()).orElseThrow();
-            return TeacherDTO.builder()
-                    .id(user.getId().toString())
-                    .firstName(teacher.getFirstName())
-                    .lastName(teacher.getLastName())
-                    .username(user.getUsername())
-                    .establishmentId(teacher.getEstablishment().toString())
-                    .build();
-        }).toList();
+        try {
+            return teacherRepository.findByFirstNameAndLastName(firstName, lastName).stream().map(teacher -> {
+                User user = userRepository.findById(teacher.getUserId()).orElseThrow();
+                return TeacherDTO.builder()
+                        .id(user.getId().toString())
+                        .firstName(teacher.getFirstName())
+                        .lastName(teacher.getLastName())
+                        .username(user.getUsername())
+                        .establishmentId(teacher.getEstablishment().toString())
+                        .build();
+            }).toList();
+        }catch (Exception e){
+            return new ArrayList<>();
+        }
     }
 
     public ObjectId createTeacher(CreateUserDTO creationDTO) throws AlreadyExistingTeacherException {
