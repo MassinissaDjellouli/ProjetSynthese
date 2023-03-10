@@ -1,0 +1,24 @@
+{
+    "programs":[
+        {
+            "name":"Informatique",
+            "description":"Informatique",
+            "type":"Technique"
+        },
+        {
+            "name":"Gestion",
+            "description":"Gestion",
+            "type":"Preuniversitaire"
+        },
+        {
+            "name":"Gestion des ressources humaines",
+            "description":"Gestion des ressources humaines",
+            "type":"Technique"
+        },
+        {
+            "name":"Francais",
+            "description":"Francais",
+            "type":"Autre"
+        }
+    ]
+}

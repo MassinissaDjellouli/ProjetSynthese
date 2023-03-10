@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Programs>
+    <Program>
+        <Name>Program 1</Name>
+        <Description>Program 1 Description</Description>
+        <Type>Technique</Type>
+    </Program>
+    <Program>
+        <Name>Program 2</Name>
+        <Description>Program 2 Description</Description>
+        <Type>Technique</Type>
+    </Program>
+    <Program>
+        <Name>Program 3</Name>
+        <Description>Program 3 Description</Description>
+        <Type>Technique</Type>
+    </Program>
+    <Program>
+        <Name>Program 4</Name>
+        <Description>Program 4 Description</Description>
+        <Type>Technique</Type>
+    </Program>
+</Programs>

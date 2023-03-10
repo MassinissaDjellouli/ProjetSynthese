@@ -1,0 +1,21 @@
+{
+    "courses":[
+        {
+            "name":"Introduction à la programmation",
+            "hoursPerWeek":10
+        },
+        {
+            "name":"Introduction au web",
+            "hoursPerWeek":10
+        },
+        {
+            "name":"Introduction aux bases de données",
+            "hoursPerWeek":20
+        },
+        {
+            "name":"Introduction aux systèmes d'exploitation",
+            "hoursPerWeek":15
+        }
+       
+    ]
+}
