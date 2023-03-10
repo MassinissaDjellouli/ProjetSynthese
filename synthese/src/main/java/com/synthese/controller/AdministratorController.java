@@ -142,4 +142,17 @@ public class AdministratorController {
         return ResponseEntity.ok().body(adminService.getTeachersByName(firstName, lastName));
     }
 
+    @PostMapping("/establishment/{id}/addProgramList")
+    public ResponseEntity<?> addProgramList(@PathVariable String id, @RequestBody List<ProgramCreationDTO> programDTOList) {
+        try {
+            adminService.addProgramList(id, programDTOList);
+            return ResponseEntity.ok().body(DataDTO.<String>builder().data("Success").build());
+        } catch (AlreadyExistingProgramException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDTO
+                    .builder()
+                    .error(Errors.ALREADY_EXISTING_PROGRAM)
+                    .build()
+            );
+        }
+    }
 }
