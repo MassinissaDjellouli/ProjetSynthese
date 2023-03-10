@@ -7,6 +7,7 @@ import com.synthese.model.*;
 import com.synthese.repository.*;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class AdministratorService {
     private final StudentRepository studentRepository;
     private final ManagerRepository managerRepository;
     private final TeacherRepository teacherRepository;
+    private final ProgramRepository programRepository;
     private final String DEFAULT_ADMIN_PASSWORD = "12345678";
     private final String DEFAULT_ADMIN_USERNAME = "admin123";
 
@@ -112,7 +114,7 @@ public class AdministratorService {
     }
 
     public List<StudentDTO> getStudentsByName(String firstName, String lastName) {
-        try{
+        try {
             return studentRepository.findByFirstNameAndLastName(firstName, lastName).stream().map(student -> {
                 User user = userRepository.findById(student.getUserId()).orElseThrow();
                 return StudentDTO.builder()
@@ -123,13 +125,13 @@ public class AdministratorService {
                         .establishmentId(student.getEstablishment().toString())
                         .build();
             }).toList();
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ArrayList<>();
         }
     }
 
     public List<ManagerDTO> getManagersByName(String firstName, String lastName) {
-        try{
+        try {
             return managerRepository.findByFirstNameAndLastName(firstName, lastName).stream().map(manager -> {
                 User user = userRepository.findById(manager.getUserId()).orElseThrow();
                 return ManagerDTO.builder()
@@ -140,9 +142,9 @@ public class AdministratorService {
                         .establishmentId(manager.getEstablishment().toString())
                         .build();
             }).toList();
-            }catch (Exception e){
-                return new ArrayList<>();
-            }
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
     }
 
     public List<TeacherDTO> getTeachersByName(String firstName, String lastName) {
@@ -157,7 +159,7 @@ public class AdministratorService {
                         .establishmentId(teacher.getEstablishment().toString())
                         .build();
             }).toList();
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ArrayList<>();
         }
     }
@@ -210,5 +212,19 @@ public class AdministratorService {
                 .firstName(creationDTO.getFirstName())
                 .lastName(creationDTO.getLastName())
                 .build()).getId();
+    }
+
+    public void addProgramList(String id, List<ProgramCreationDTO> programDTOList) throws AlreadyExistingProgramException {
+        try {
+            List<Program> programList = programDTOList.stream()
+                    .map(programCreationDTO -> programCreationDTO.toModel(id)).toList();
+            programList.forEach(program -> program.setEstablishment(new ObjectId(id)));
+            programRepository.saveAll(programList);
+        } catch (Exception e) {
+            if (e instanceof DuplicateKeyException) {
+                throw new AlreadyExistingProgramException();
+            }
+            throw e;
+        }
     }
 }
