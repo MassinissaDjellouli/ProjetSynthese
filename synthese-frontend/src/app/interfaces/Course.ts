@@ -1,1 +1,5 @@
-export interface Course {}
+export interface Course {
+    id: string;
+    name: string;
+    hoursPerWeek: number;
+}
