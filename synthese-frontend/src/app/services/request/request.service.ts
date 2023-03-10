@@ -56,13 +56,16 @@ export const isError = (res: ApiError | ApiResponse) => {
     return false;
   }
 }
-export const parseError = (res:ApiError | ApiResponse) => {
+export const parseError = (res:ApiError | ApiResponse, defaultErrorMsg:string = "UNKNOWN_ERROR") => {
   let err = (res as ApiError).error
   let errors = Object.keys(Errors);
   console.log(err);
   
   if (err == undefined || !errors.includes(err)) {
-    err = "UNKNOWN_ERROR"
+    err = defaultErrorMsg;
+    if(defaultErrorMsg != "UNKNOWN_ERROR"){
+      return err;
+    }
   }
   return Errors[err as keyof typeof Errors];
 }
