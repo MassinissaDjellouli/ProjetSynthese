@@ -1,17 +1,23 @@
 package com.synthese.controller;
 
+import com.synthese.dto.CourseCreationDTO;
+import com.synthese.dto.DataDTO;
 import com.synthese.dto.ErrorDTO;
 import com.synthese.dto.LoginDTO;
 import com.synthese.enums.Errors;
+import com.synthese.exceptions.AlreadyExistingCourseException;
 import com.synthese.exceptions.ManagerNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
 import com.synthese.exceptions.WrongPasswordException;
 import com.synthese.service.ManagerService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -36,6 +42,41 @@ public class ManagerController {
                     .builder()
                     .error(Errors.INVALID_CREDENTIALS)
                     .build());
+        }
+    }
+
+    @GetMapping("/program/{programId}/courses")
+    public ResponseEntity<?> getCourses(@PathVariable String programId) {
+        return ResponseEntity.ok().body(managerService.getCourses(programId));
+    }
+
+    @GetMapping("/establishment/{establishmentId}/programs")
+    public ResponseEntity<?> getPrograms(@PathVariable String establishmentId) {
+        return ResponseEntity.ok().body(managerService.getPrograms(establishmentId));
+    }
+
+    @GetMapping("/establishment/{establishmentId}/teachers")
+    public ResponseEntity<?> getTeachers(@PathVariable String establishmentId) {
+        return ResponseEntity.ok().body(managerService.getTeachers(establishmentId));
+    }
+
+    @PutMapping("/course/{id}/addTeachers")
+    public ResponseEntity<?> addCourses(@PathVariable String id, @RequestBody List<ObjectId> teachers) {
+        managerService.addTeacherToCourse(id, teachers);
+        return ResponseEntity.ok().body(DataDTO.<String>builder().data("Success").build());
+    }
+
+    @PostMapping("/program/{id}/addCourseList")
+    public ResponseEntity<?> addCourseList(@PathVariable String id, @RequestBody List<CourseCreationDTO> courseCreationDTOList) {
+        try {
+            managerService.addCourseList(id, courseCreationDTOList);
+            return ResponseEntity.ok().body(DataDTO.<String>builder().data("Success").build());
+        } catch (AlreadyExistingCourseException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDTO
+                    .builder()
+                    .error(Errors.ALREADY_EXISTING_COURSE)
+                    .build()
+            );
         }
     }
 }
