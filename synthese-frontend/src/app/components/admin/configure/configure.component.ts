@@ -1,16 +1,14 @@
 import { Component } from '@angular/core';
-import { Program } from 'src/app/interfaces/Program';
-import { ParseTreeResult, XmlParser } from '@angular/compiler';
-import { FormGroup, FormControl, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
-import { LoadingService } from '../../../services/loading/loading.service';
-import { Establishment } from '../../../interfaces/Establishment';
-import { Teacher } from '../../../interfaces/Teacher';
-import { RequestService, isError, parseError } from '../../../services/request/request.service';
-import { ApiResponse } from 'src/app/interfaces/ApiResponse';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ApiResponse } from 'src/app/interfaces/ApiResponse';
+import { Program } from 'src/app/interfaces/Program';
+import { setupXMLReader } from 'src/app/utils/xmlUtil';
 import { ApiError } from '../../../interfaces/ApiError';
+import { Establishment } from '../../../interfaces/Establishment';
+import { LoadingService } from '../../../services/loading/loading.service';
 import { LoggedInService } from '../../../services/login/loggedIn/logged-in.service';
-import { Errors } from '../../../interfaces/ErrorsEnum';
+import { RequestService, isError, parseError } from '../../../services/request/request.service';
 
 @Component({
   selector: 'app-configure',
@@ -71,8 +69,6 @@ export class ConfigureComponent {
       this.invalidFileFormat(error)
       return;
     }
-
-    
   }
   setProgramListFromJson = (file: any) => {
     let reader: FileReader = new FileReader()
@@ -87,73 +83,9 @@ export class ConfigureComponent {
     }
     reader.readAsText(file)
   }
-  processRootNode = (node: any, rootNodeName: string) => {
-    if (node.name == undefined || node.name.toLowerCase() != rootNodeName.toLowerCase()) {
-      return
-    }
-    let list:Program[] = []
-    node.children.forEach(
-      (child: any) => {
-        if (child.name == undefined) {
-          return
-        }
-        let program = {};
-        program = this.processChildNode(child)
-        list.push(program as Program)
-      })
-      this.setProgramList(list)
-  }
-  hasChildren = (node: any): boolean => {
-    let hasChildren = false;
-    if (node.children == undefined || node.children.length == 0) {
-      return false;
-    }
-    node.children.forEach((child: any) => {
-      if (child.name != undefined) {
-        hasChildren = true
-        return
-      }
-      if (child.value != undefined && !(child.value as string).includes("\n")) {
-        hasChildren = true
-        return
-      }
-    })
-    return hasChildren
-  }
-  processChildNode = (node: any): any => {
-    if (node.name == undefined && ((node.value as string).includes("\n"))) {
-      return;
-    }
-    if (node.value != undefined && !node.value.includes("\n")) {
-      return node.value
-    }
-    if (!this.hasChildren(node)) {
-      return node.value != undefined ? node.value : []
-    }
-    let content: any = {}
-    node.children.forEach(
-      (child: any) => {
-        if (child.name != undefined) {
-          content[child.name.toLowerCase()] = this.processChildNode(child)
-        }
-        if (child.value != undefined && !child.value.includes("\n")) {
-          content = this.processChildNode(child)
-        }
-      }
-    )
-    return content
-  }
-  getUploadedFiles = () => {
-    return this.uploadedFiles
-  }
+  
   setProgramListFromXML = async (file: any) => {
-    let parser: XmlParser = new XmlParser()
-    let reader: FileReader = new FileReader()
-    reader.onload = (event: any) => {
-      let xmlString: string = event.target.result
-      let result: ParseTreeResult = parser.parse(xmlString, 'text/xml')
-      result.rootNodes.forEach((node) => this.processRootNode(node, "programs"))
-    }
+    let reader:FileReader = setupXMLReader("programs")
     reader.readAsText(file)
     reader.onloadend = () => {
       try {
@@ -168,10 +100,6 @@ export class ConfigureComponent {
       }
     }
   }
-  invalidFileFormat = (error:any = 'Invalid file format') => {
-    console.log(error);
-    this.programListError = 'Invalid file format'
-  }
 
   setProgramList = (programList: Program[]) => {
     if(programList == undefined || programList.length == 0){
@@ -182,6 +110,11 @@ export class ConfigureComponent {
     this.programListError = ''
     this.disabled = true
   }
+  invalidFileFormat = (error:any = 'Invalid file format') => {
+    console.log(error);
+    this.programListError = error
+  }
+
   isValid = () => {
     let openTime:Date = new Date();
     let closeTime:Date = new Date();
