@@ -16,4 +16,6 @@ public interface TeacherRepository extends MongoRepository<Teacher, ObjectId> {
     List<Teacher> findByFirstNameAndLastName(String firstName, String lastName);
 
     Optional<Teacher> findByUserIdAndEstablishment(ObjectId id, ObjectId establishmentId);
+
+    List<Teacher> findByEstablishment(ObjectId establishmentId);
 }
