@@ -6,18 +6,17 @@ import com.synthese.exceptions.AlreadyExistingCourseException;
 import com.synthese.exceptions.ManagerNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
 import com.synthese.exceptions.WrongPasswordException;
-import com.synthese.model.Course;
-import com.synthese.model.Manager;
-import com.synthese.model.Program;
-import com.synthese.model.User;
+import com.synthese.model.*;
 import com.synthese.repository.*;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -91,5 +90,18 @@ public class ManagerService {
         }
     }
 
-
+    public void addTeacherToCourse(String id, List<ObjectId> teachers) {
+        teachers.forEach(teacherId -> {
+            Optional<Teacher> teacherOpt = teacherRepository.findById(teacherId);
+            if (teacherOpt.isEmpty()) {
+                return;
+            }
+            Teacher teacher = teacherOpt.get();
+            List<ObjectId> courses = teacher.getCourses();
+            courses.add(new ObjectId(id));
+            Set<String> uniqueCoursesSet = new HashSet<>(courses.stream().map(ObjectId::toString).toList());
+            teacher.setCourses(uniqueCoursesSet.stream().map(ObjectId::new).toList());
+            teacherRepository.save(teacher);
+        });
+    }
 }
