@@ -7,6 +7,8 @@ import { EstablishmentComponent } from './components/admin/establishment/establi
 import { CreateAccountComponent } from './components/admin/establishment/create-account/create-account.component';
 import { SelectUserPageComponent } from './components/home/login/select-user-page/select-user-page.component';
 import { ModifyComponent } from './components/admin/establishment/modify/modify.component';
+import { AssignComponent } from './components/manager/assign/assign.component';
+import { CreateClassesComponent } from './components/manager/create-classes/create-classes.component';
 
 const routes: Routes = [
   //everyone routes
@@ -16,10 +18,12 @@ const routes: Routes = [
   { path: 'configure', component: ConfigureComponent },
   { path: 'establishment/:id', component: EstablishmentComponent },
   { path: 'establishment/:id/createAccount/:type', component: CreateAccountComponent },
-  { path: 'establishment/:id/modify', component:ModifyComponent}
+  { path: 'establishment/:id/modify', component:ModifyComponent},
   //student routes
   //teacher routes
   //manager routes
+  { path: 'assignClasses', component: AssignComponent},
+  { path: 'addClasses', component: CreateClassesComponent}
 ];
 
 

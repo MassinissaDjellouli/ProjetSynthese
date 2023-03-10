@@ -38,6 +38,9 @@ import {ToastModule} from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { SelectUserPageComponent } from './components/home/login/select-user-page/select-user-page.component';
 import { ModifyComponent } from './components/admin/establishment/modify/modify.component';
+import { AssignComponent } from './components/manager/assign/assign.component';
+import {PickListModule} from 'primeng/picklist';
+import { CreateClassesComponent } from './components/manager/create-classes/create-classes.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -55,7 +58,9 @@ import { ModifyComponent } from './components/admin/establishment/modify/modify.
     CreateTeacherComponent,
     CreateManagerComponent,
     SelectUserPageComponent,
-    ModifyComponent
+    ModifyComponent,
+    AssignComponent,
+    CreateClassesComponent
   ],
   imports: [
     BrowserModule,
@@ -79,7 +84,8 @@ import { ModifyComponent } from './components/admin/establishment/modify/modify.
     ScrollTopModule,
     ScrollPanelModule,
     TableModule,
-    ToastModule
+    ToastModule,
+    PickListModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]
