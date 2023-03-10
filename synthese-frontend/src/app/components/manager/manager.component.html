@@ -1,1 +1,23 @@
-<p>manager works!</p>
+<div class="container">
+    <div class="d-flex justify-content-center">
+        <h2 class="text-center">Bienvenue {{currentUser.firstName}} {{currentUser.lastName}}</h2>
+    </div>
+    <div class="row">
+        <div class="col-6 p-4">
+            <p-card header="Ajouter des cours a un programme">
+                Vous pouvez déposer une liste de cours a ajouter dans un programme.
+                <ng-template pTemplate="footer">
+                <button routerLink="addClasses" pButton type="button" label="Ajouter" class="p-button-outlined mx-2"></button>
+                </ng-template>
+            </p-card>
+        </div>
+        <div class="col-6 p-4">
+            <p-card header="Assigner des cours a un enseignant">
+                Vous pouvez déposer une liste de cours et assigner chacun d'eux à un enseignant.
+                <ng-template pTemplate="footer">
+                    <p-button routerLink="assignClasses" label="Assigner"></p-button>
+                </ng-template>
+            </p-card>
+        </div>
+    </div>    
+</div>
