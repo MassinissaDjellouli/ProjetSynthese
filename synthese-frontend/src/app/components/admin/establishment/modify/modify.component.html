@@ -1,6 +1,6 @@
 <div class="container" *ngIf="establishment != undefined">
     <p-card header="Modifier l'établissement">
-        <p>Nom: {{establishment.name}}    
+        <!-- <p>Nom: {{establishment.name}}    
             <p-button class="p-button-sm" *ngIf="!modifiedFields!.get('name')" label="Modifier" class="col-6"></p-button>
         </p>
         <p>Numero de telephone: {{getPhone(establishment.phone)}}
@@ -34,9 +34,30 @@
         </p>
         <p>Pause entre les périodes: {{establishment.betweenPeriodsLength}} min
             <p-button class="p-button-sm" *ngIf="!modifiedFields!.get('betweenPeriodsLength')" label="Modifier" class="col-6"></p-button>
-        </p>
+        </p> -->
     </p-card>
-    <div class="d-flex my-3 justify-content-center" >
+    <div class="mt-4">
+
+        <p-card header="Ajouter des programmes (Fichier xml ou json)">
+            <div class="row" *ngIf="programListError != ''">
+                <h4 class="text-danger text-center">{{programListError}}</h4>
+            </div>
+            <div *ngIf="isDisabled()">
+                <p>Liste de programme ajoutée!</p>
+            </div>
+            <div *ngIf="!isDisabled()">
+                <p-fileUpload accept=".json,.xml" [maxFileSize]="1000000" [customUpload]="true"
+                (uploadHandler)="upload($event)" >
+                <ng-template pTemplate="content">
+                    <ul *ngIf="uploadedFiles.length">
+                        <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
+                    </ul>
+                </ng-template>
+            </p-fileUpload>
+        </div>
+        </p-card>
+    </div>
+    <div class="d-flex my-3 justify-content-center">
         <p-button [disabled]="modifiedEstablishment == undefined || isModified()" label="Modifier"></p-button>
     </div>
 </div>
