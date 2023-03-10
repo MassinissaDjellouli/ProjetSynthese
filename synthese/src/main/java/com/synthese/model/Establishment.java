@@ -4,7 +4,6 @@ import com.synthese.dto.EstablishmentDTO;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,12 +26,6 @@ public class Establishment {
     private String address;
     @NotBlank
     private String phone;
-    @NotNull
-    private List<Long> programs;
-    @NotNull
-    private List<Long> teachers;
-    @NotNull
-    private List<Long> students;
     @Min(1)
     private long periodLength;
     @NotBlank
