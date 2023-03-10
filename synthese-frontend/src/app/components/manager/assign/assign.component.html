@@ -1,0 +1,66 @@
+<div class="container">
+    <h1 class="text-center">Assigner des enseignants</h1>
+    <div [ngSwitch]="currentlySelected()">
+        <div *ngSwitchDefault>
+            <h3>Programmes:</h3>
+            <p-table *ngIf="hasPrograms()" [value]="getPrograms()" [paginator]="true" [rows]="10"
+                [rowsPerPageOptions]="[5,10,20]" [responsive]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Programme</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-program>
+                    <tr>
+                        <td>{{program.name}}</td>
+                        <td>{{program.description}}</td>
+                        <td>
+                            <button pButton type="button" label="Choisir" (click)="selectProgram(program)"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <p *ngIf="!hasPrograms()" class="text-danger">Aucun programme. Veuillez contacter un administrateur.</p>
+        </div>
+        <div *ngSwitchCase="'Course'">
+            <h3>Cours:</h3>
+            <button pButton type="button" label="Changer de programme" class="my-2" (click)="clearProgram()"></button>
+            <p-table *ngIf="hasCourses()" [value]="getCourses()" [paginator]="true" [rows]="10"
+                [rowsPerPageOptions]="[5,10,20]" [responsive]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Cours</th>
+                        <th>Actions</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-course>
+                    <tr>
+                        <td>{{course.name}}</td>
+                        <td>
+                            <button pButton type="button" label="Choisir" (click)="selectCourse(course)"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <p *ngIf="!hasCourses()" class="text-danger">Aucun cours. Veuillez ajouter des cours a ce programme.</p>
+
+        </div>
+        <div *ngSwitchCase="'Teacher'">
+            <h3>Cours: {{selectedCourse!.name}}</h3>
+            <h5>Nombre d'heures par semaine: {{selectedCourse!.hoursPerWeek}}</h5>
+            <button pButton type="button" label="Changer de cours" class="my-2" (click)="clearCourse()"></button>
+            <p-pickList [source]="availableTeachers" [target]="chosenTeachers" *ngIf="hasTeachers()">
+                <ng-template let-teacher pTemplate="item">
+                    <div>
+                        {{teacher.firstName}} {{teacher.lastName}} - Heures par semaine: {{getHoursPerWeek(teacher)}} h
+                    </div>
+                </ng-template>
+            </p-pickList>
+            <div class="d-flex justify-content-center">
+                <button pButton type="button" label="Assigner" class="my-2" (click)="assign()"></button>
+            </div>
+        </div>
+    </div>
+</div>
