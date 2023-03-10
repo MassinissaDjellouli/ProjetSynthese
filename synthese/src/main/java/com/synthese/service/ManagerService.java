@@ -2,6 +2,7 @@ package com.synthese.service;
 
 import com.synthese.dto.*;
 import com.synthese.enums.Roles;
+import com.synthese.exceptions.AlreadyExistingCourseException;
 import com.synthese.exceptions.ManagerNotFoundException;
 import com.synthese.exceptions.UserNotFoundException;
 import com.synthese.exceptions.WrongPasswordException;
@@ -12,6 +13,7 @@ import com.synthese.model.User;
 import com.synthese.repository.*;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -69,5 +71,25 @@ public class ManagerService {
                     return teacher.toDTO(establishmentId, courseRepository.findAllById(teacher.getCourses()));
                 }).toList();
     }
+
+    public void addCourseList(String programId, List<CourseCreationDTO> courseCreationDTOList) throws AlreadyExistingCourseException {
+        try {
+            Program program = programRepository.findById(new ObjectId(programId)).orElseThrow();
+            courseCreationDTOList.forEach(courseCreationDTO -> {
+                Course course = Course.builder()
+                        .name(courseCreationDTO.getName())
+                        .hoursPerWeek(courseCreationDTO.getHoursPerWeek())
+                        .program(program.getId())
+                        .build();
+                courseRepository.save(course);
+            });
+        } catch (Exception e) {
+            if (e instanceof DuplicateKeyException) {
+                throw new AlreadyExistingCourseException();
+            }
+            throw e;
+        }
+    }
+
 
 }
