@@ -1,14 +1,8 @@
 package com.synthese.controller;
 
-import com.synthese.dto.CourseCreationDTO;
-import com.synthese.dto.DataDTO;
-import com.synthese.dto.ErrorDTO;
-import com.synthese.dto.LoginDTO;
+import com.synthese.dto.*;
 import com.synthese.enums.Errors;
-import com.synthese.exceptions.AlreadyExistingCourseException;
-import com.synthese.exceptions.ManagerNotFoundException;
-import com.synthese.exceptions.UserNotFoundException;
-import com.synthese.exceptions.WrongPasswordException;
+import com.synthese.exceptions.*;
 import com.synthese.service.ManagerService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -77,6 +71,36 @@ public class ManagerController {
                     .error(Errors.ALREADY_EXISTING_COURSE)
                     .build()
             );
+        }
+    }
+
+    @PutMapping("/establishment/{id}/addStudentList")
+    public ResponseEntity<?> addStudentList(@PathVariable String id, @RequestBody List<StudentLinkDTO> studentList) {
+        int addedStudentCount = managerService.addStudentList(id, studentList);
+        if (addedStudentCount == 0)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDTO
+                    .builder()
+                    .error(Errors.NO_STUDENT_ADDED)
+                    .build());
+
+        if (addedStudentCount == studentList.size())
+            return ResponseEntity.ok().body(DataDTO.<String>builder().data("Success").build());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDTO
+                .builder()
+                .error(Errors.STUDENTS_PARTIALLY_ADDED)
+                .build());
+    }
+
+    @GetMapping("/establishment/{id}")
+    public ResponseEntity<?> getEstablishment(@PathVariable String id) {
+        try {
+            return ResponseEntity.ok().body(managerService.getEstablishment(id));
+        } catch (EstablishmentNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorDTO
+                    .builder()
+                    .error(Errors.ESTABLISHMENT_NOT_FOUND)
+                    .build());
         }
     }
 }
