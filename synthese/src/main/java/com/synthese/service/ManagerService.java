@@ -2,10 +2,7 @@ package com.synthese.service;
 
 import com.synthese.dto.*;
 import com.synthese.enums.Roles;
-import com.synthese.exceptions.AlreadyExistingCourseException;
-import com.synthese.exceptions.ManagerNotFoundException;
-import com.synthese.exceptions.UserNotFoundException;
-import com.synthese.exceptions.WrongPasswordException;
+import com.synthese.exceptions.*;
 import com.synthese.model.*;
 import com.synthese.repository.*;
 import lombok.AllArgsConstructor;
@@ -26,6 +23,8 @@ public class ManagerService {
     private final TeacherRepository teacherRepository;
     private final ProgramRepository programRepository;
     private final CourseRepository courseRepository;
+    private final StudentRepository studentRepository;
+    private final EstablishmentRepository establishmentRepository;
 
     public List<ManagerDTO> login(LoginDTO loginDTO) throws UserNotFoundException, WrongPasswordException, ManagerNotFoundException {
         Optional<User> user = userRepository.findByUsernameAndRole(loginDTO.getUsername(), Roles.MANAGER);
@@ -103,5 +102,37 @@ public class ManagerService {
             teacher.setCourses(uniqueCoursesSet.stream().map(ObjectId::new).toList());
             teacherRepository.save(teacher);
         });
+    }
+
+    public int addStudentList(String establishmentId, List<StudentLinkDTO> studentList) {
+        int[] addedStudents = {0};
+        studentList.forEach(studentLinkDTO -> {
+            Optional<User> userOpt = userRepository.findByUsernameAndRole(studentLinkDTO.getUsername(), Roles.STUDENT);
+            if (userOpt.isEmpty()) {
+                return;
+            }
+            User user = userOpt.get();
+            Optional<Student> student = studentRepository.findByUserIdAndEstablishment(user.getId(), new ObjectId(establishmentId));
+            if (student.isEmpty()) {
+                return;
+            }
+            Optional<Program> programOptional = programRepository.findByEstablishmentAndName(new ObjectId(establishmentId), studentLinkDTO.getProgramName());
+            if (programOptional.isEmpty()) {
+                return;
+            }
+            Program program = programOptional.get();
+            student.get().setProgram(program.getId());
+            studentRepository.save(student.get());
+            addedStudents[0]++;
+        });
+        return studentList.size() - addedStudents[0];
+    }
+
+    public EstablishmentDTO getEstablishment(String id) throws EstablishmentNotFoundException {
+        Optional<Establishment> opt = establishmentRepository.findById(new ObjectId(id));
+        if (opt.isEmpty()) {
+            throw new EstablishmentNotFoundException();
+        }
+        return opt.get().toDTO();
     }
 }
