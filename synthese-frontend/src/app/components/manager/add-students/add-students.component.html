@@ -1,0 +1,21 @@
+<div class="container">
+    <h1 class="text-center">Ajouter des élèves</h1>
+    <p-card header="Ajouter des élèves (Fichier json)">
+        <div class="row" *ngIf="studentListError != ''">
+            <h4 class="text-danger text-center">{{studentListError}}</h4>
+        </div>
+        <div *ngIf="isDisabled()">
+            <p>Liste d'élèves ajoutée!</p>
+        </div>
+        <div *ngIf="!isDisabled()">
+            <p-fileUpload accept=".json" [maxFileSize]="1000000" [customUpload]="true"
+            (uploadHandler)="upload($event)" >
+            <ng-template pTemplate="content">
+                <ul *ngIf="uploadedFiles.length">
+                    <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>
+                </ul>
+            </ng-template>
+        </p-fileUpload>
+    </div>
+    </p-card>
+</div>
