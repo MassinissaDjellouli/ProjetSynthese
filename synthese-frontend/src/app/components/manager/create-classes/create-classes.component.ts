@@ -43,7 +43,7 @@ export class CreateClassesComponent {
         return
       }
       this.loadingService.stopLoading()
-      this.messageService.add({severity:'success', summary:'Succès', detail:'Coursemes envoyés avec succès'})
+      this.messageService.add({severity:'success', summary:'Succès', detail:'Cours envoyés avec succès'})
     },400)
   })
   isDisabled = () => this.disabled
