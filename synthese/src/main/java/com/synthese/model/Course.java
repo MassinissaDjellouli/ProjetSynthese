@@ -23,7 +23,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Course {
 
     @Id
-    private String id;
+    private ObjectId id;
     @NotBlank
     private String name;
     @Min(1)
@@ -34,7 +34,7 @@ public class Course {
 
     public CourseDTO toDTO() {
         return CourseDTO.builder()
-                .id(id)
+                .id(id.toString())
                 .name(name)
                 .hoursPerWeek(hoursPerWeek)
                 .program(program.toString())
