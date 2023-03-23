@@ -1,0 +1,20 @@
+{
+    "students":[
+        {
+            "username":"238da65b60e1",
+            "programName":"Informatique"
+        },
+        {
+            "username":"23f513b44501",
+            "programName":"Informatique"
+        },
+        {
+            "username":"2332a183fa78",
+            "programName":"Gestion"
+        },
+        {
+            "username":"23c07f4c69",
+            "programName":"Gestion"
+        }
+    ]
+}
