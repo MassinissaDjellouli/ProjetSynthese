@@ -41,6 +41,9 @@ import { ModifyComponent } from './components/admin/establishment/modify/modify.
 import { AssignComponent } from './components/manager/assign/assign.component';
 import {PickListModule} from 'primeng/picklist';
 import { CreateClassesComponent } from './components/manager/create-classes/create-classes.component';
+import { AddStudentsComponent } from './components/manager/add-students/add-students.component';
+import { CreateScheduleComponent } from './components/teacher/create-schedule/create-schedule.component';
+import { FullCalendarModule } from '@fullcalendar/angular';
 @NgModule({
   declarations: [
     AppComponent,
@@ -60,7 +63,9 @@ import { CreateClassesComponent } from './components/manager/create-classes/crea
     SelectUserPageComponent,
     ModifyComponent,
     AssignComponent,
-    CreateClassesComponent
+    CreateClassesComponent,
+    AddStudentsComponent,
+    CreateScheduleComponent
   ],
   imports: [
     BrowserModule,
@@ -85,7 +90,8 @@ import { CreateClassesComponent } from './components/manager/create-classes/crea
     ScrollPanelModule,
     TableModule,
     ToastModule,
-    PickListModule
+    PickListModule,
+    FullCalendarModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]
