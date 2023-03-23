@@ -19,6 +19,7 @@ public class Student {
     private ObjectId id;
     private ObjectId establishment;
     private ObjectId userId;
+    private ObjectId program;
     private String firstName;
     private String lastName;
     private int currentSession;
