@@ -9,4 +9,6 @@ export enum Errors{
     ALREADY_EXISTING_TEACHER = "Ce professeur existe déjà sur cet établissement",
     ALREADY_EXISTING_PROGRAM = "Un de ces programmes existe déjà sur cet établissement",
     ALREADY_EXISTING_COURSE = "Un de ces cours existe déjà pour ce programme",
+    NO_STUDENT_ADDED = "Aucun élève n'a été ajouté",
+    STUDENTS_PARTIALLY_ADDED = "Certains élèves n'ont pas pu être ajoutés",
 }
