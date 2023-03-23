@@ -303,6 +303,7 @@ public class AdministratorControllerTest {
                         .content(createUserDTOJacksonTester.write(createUserDTO).getJson()))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     public void getStudentByNameHappyDay() throws Exception {
         when(administratorService.getStudentsByName(anyString(), anyString())).thenReturn
@@ -341,10 +342,10 @@ public class AdministratorControllerTest {
                 .andExpect(jsonPath("$.length()", is(0)));
     }
 
-@Test
+    @Test
     public void getTeacherByNameHappyDay() throws Exception {
         when(administratorService.getTeachersByName(anyString(), anyString())).thenReturn
-                (List.of(teacher1.toDTO()));
+                (List.of(teacher1.toDTO("")));
         mockMvc.perform(get("/api/admin/getTeachersByName/{firstName}/{lastName}",
                         "teacher1", "teacher1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -358,7 +359,7 @@ public class AdministratorControllerTest {
         teacher2.setFirstName("teacher1");
         teacher2.setLastName("teacher1");
         when(administratorService.getTeachersByName(anyString(), anyString())).thenReturn
-                (List.of(teacher1.toDTO(), teacher2.toDTO()));
+                (List.of(teacher1.toDTO(""), teacher2.toDTO("")));
         mockMvc.perform(get("/api/admin/getTeachersByName/{firstName}/{lastName}/",
                         "teacher1", "teacher1")
                         .contentType(MediaType.APPLICATION_JSON)

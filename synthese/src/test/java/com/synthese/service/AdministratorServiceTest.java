@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DuplicateKeyException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,8 @@ public class AdministratorServiceTest {
     private ManagerRepository managerRepository;
     @Mock
     private EstablishmentRepository establishmentRepository;
+    @Mock
+    private ProgramRepository programRepository;
     private Administrator administrator;
     private User adminUser;
     private LoginDTO loginDTO;
@@ -52,6 +55,7 @@ public class AdministratorServiceTest {
     private Teacher teacher2;
     private Manager manager1;
     private Manager manager2;
+    private Program program1;
     private EstablishmentCreationDTO establishmentCreationDTO;
     private EstablishmentDTO establishmentDTO;
     private CreateUserDTO createUserDTO;
@@ -198,6 +202,12 @@ public class AdministratorServiceTest {
         createUserDTO = CreateUserDTO.builder()
                 .firstName("student")
                 .lastName("student")
+                .build();
+
+        program1 = Program.builder()
+                .id(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c54"))
+                .name("program1")
+                .establishment(new ObjectId("ffffffffffffffffffffffff"))
                 .build();
     }
 
@@ -567,5 +577,30 @@ public class AdministratorServiceTest {
         verify(managerRepository, times(1)).findByFirstNameAndLastName(any(), any());
         verify(userRepository, times(1)).findById(any());
         assertEquals(managerDTO.size(), 0);
+    }
+
+    @Test
+    public void addProgramListTestHappyDay() throws Exception {
+        when(programRepository.saveAll(any())).thenReturn(List.of(program1));
+        administratorService.addProgramList(establishmentDTO.getId(), List.of(ProgramCreationDTO.builder()
+                .name("Test")
+                .description("Test")
+                .type("Autre").build()));
+        verify(programRepository, times(1)).saveAll(any());
+    }
+
+    @Test
+    public void addProgramListTestAlreadyExists() {
+        when(programRepository.saveAll(any())).thenThrow(DuplicateKeyException.class);
+
+        try {
+            administratorService.addProgramList(establishmentDTO.getId(), List.of(ProgramCreationDTO.builder()
+                    .name("Test")
+                    .description("Test")
+                    .type("Autre").build()));
+        } catch (AlreadyExistingProgramException e) {
+            return;
+        }
+        fail("Exception not thrown");
     }
 }
