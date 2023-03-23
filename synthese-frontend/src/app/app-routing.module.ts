@@ -9,6 +9,9 @@ import { SelectUserPageComponent } from './components/home/login/select-user-pag
 import { ModifyComponent } from './components/admin/establishment/modify/modify.component';
 import { AssignComponent } from './components/manager/assign/assign.component';
 import { CreateClassesComponent } from './components/manager/create-classes/create-classes.component';
+import { CreateStudentComponent } from './components/admin/establishment/create-account/student/student.component';
+import { AddStudentsComponent } from './components/manager/add-students/add-students.component';
+import { CreateScheduleComponent } from './components/teacher/create-schedule/create-schedule.component';
 
 const routes: Routes = [
   //everyone routes
@@ -21,9 +24,11 @@ const routes: Routes = [
   { path: 'establishment/:id/modify', component:ModifyComponent},
   //student routes
   //teacher routes
+  { path: 'createSchedule', component: CreateScheduleComponent},
   //manager routes
   { path: 'assignClasses', component: AssignComponent},
-  { path: 'addClasses', component: CreateClassesComponent}
+  { path: 'addClasses', component: CreateClassesComponent},
+  { path: 'addStudents', component: AddStudentsComponent},
 ];
 
 
