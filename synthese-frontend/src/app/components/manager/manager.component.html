@@ -12,10 +12,20 @@
             </p-card>
         </div>
         <div class="col-6 p-4">
-            <p-card header="Assigner des cours a un enseignant">
-                Vous pouvez déposer une liste de cours et assigner chacun d'eux à un enseignant.
+            <p-card header="Assigner des enseignants aux cours">
+                Vous pouvez assigner des enseignants aux cours d'un programme.
                 <ng-template pTemplate="footer">
                     <p-button routerLink="assignClasses" label="Assigner"></p-button>
+                </ng-template>
+            </p-card>
+        </div>
+    </div>    
+    <div class="row">
+        <div class="col-6 p-4">
+            <p-card header="Ajouter des élèves">
+                Vous pouvez déposer une liste d'élèves a ajouter avec leur programmes.
+                <ng-template pTemplate="footer">
+                <button routerLink="addStudents" pButton type="button" label="Ajouter" class="p-button-secondary mx-2"></button>
                 </ng-template>
             </p-card>
         </div>
