@@ -2,11 +2,7 @@ package com.synthese.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synthese.dto.*;
-import com.synthese.exceptions.ManagerNotFoundException;
-import com.synthese.exceptions.UserNotFoundException;
-import com.synthese.exceptions.WrongPasswordException;
-import com.synthese.model.Course;
-import com.synthese.model.Manager;
+import com.synthese.exceptions.*;
 import com.synthese.service.ManagerService;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,9 +19,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -42,9 +38,13 @@ public class ManagerControllerTest {
     private ProgramDTO programDTO;
     private TeacherDTO teacherDTO;
     private CourseCreationDTO courseCreationDTO;
+    private StudentLinkDTO studentLinkDTO;
+    private EstablishmentDTO establishmentDTO;
     private JacksonTester<LoginDTO> loginDTOJacksonTester;
     private JacksonTester<List<ObjectId>> teacherListJacksonTester;
     private JacksonTester<List<CourseCreationDTO>> courseCreationDTOJacksonTester;
+    private JacksonTester<List<StudentLinkDTO>> studentLinkDTOJacksonTester;
+
     @BeforeEach
     public void setup() {
         loginDTO = LoginDTO.builder()
@@ -63,19 +63,24 @@ public class ManagerControllerTest {
                 .name("course")
                 .build();
 
-programDTO = ProgramDTO.builder()
+        programDTO = ProgramDTO.builder()
                 .id("5f9f1b9b9c9d1b2b8c1c1c1c")
                 .name("program")
                 .build();
 
-teacherDTO = TeacherDTO.builder()
+        teacherDTO = TeacherDTO.builder()
                 .id("5f9f1b9b9c9d1b2b8c1c1c1c")
                 .firstName("teacher")
                 .lastName("teacher")
                 .build();
-courseCreationDTO = CourseCreationDTO.builder()
+        courseCreationDTO = CourseCreationDTO.builder()
                 .name("course")
-        .build();
+                .build();
+
+        studentLinkDTO = StudentLinkDTO.builder()
+                .username("student")
+                .programName("program")
+                .build();
         JacksonTester.initFields(this, new ObjectMapper());
 
         mockMvc = MockMvcBuilders.standaloneSetup(managerController).build();
@@ -140,7 +145,7 @@ courseCreationDTO = CourseCreationDTO.builder()
 
     @Test
     public void addTeacherTestHappyDay() throws Exception {
-        doNothing().when(managerService).addTeacherToCourse(any(),any());
+        doNothing().when(managerService).addTeacherToCourse(any(), any());
         mockMvc.perform(put("/api/manager/course/5f9f1b9b9c9d1b2b8c1c1c1c/addTeachers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(teacherListJacksonTester.write(List.of(new ObjectId("5f9f1b9b9c9d1b2b8c1c1c1c"))).getJson()))
@@ -149,10 +154,62 @@ courseCreationDTO = CourseCreationDTO.builder()
 
     @Test
     public void addCourseListTestHappyDay() throws Exception {
-        doNothing().when(managerService).addCourseList(any(),any());
+        doNothing().when(managerService).addCourseList(any(), any());
         mockMvc.perform(post("/api/manager/program/5f9f1b9b9c9d1b2b8c1c1c1c/addCourseList")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(courseCreationDTOJacksonTester.write(List.of(courseCreationDTO)).getJson()))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void addCourseList400() throws Exception {
+        doThrow(AlreadyExistingCourseException.class).when(managerService).addCourseList(any(), any());
+        mockMvc.perform(post("/api/manager/program/5f9f1b9b9c9d1b2b8c1c1c1c/addCourseList")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(courseCreationDTOJacksonTester.write(List.of(courseCreationDTO)).getJson()))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void addStudentListHappyDay() throws Exception {
+        when(managerService.addStudentList(any(), any())).thenReturn(1);
+        mockMvc.perform(put("/api/manager/establishment/5f9f1b9b9c9d1b2b8c1c1c1c/addStudentList")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(studentLinkDTOJacksonTester.write(List.of(studentLinkDTO)).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void addStudentList400NoStudents() throws Exception {
+        when(managerService.addStudentList(any(), any())).thenReturn(0);
+        mockMvc.perform(put("/api/manager/establishment/5f9f1b9b9c9d1b2b8c1c1c1c/addStudentList")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(studentLinkDTOJacksonTester.write(List.of(studentLinkDTO, studentLinkDTO)).getJson()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("NO_STUDENT_ADDED"));
+    }
+
+    @Test
+    public void addStudentList400PartialStudents() throws Exception {
+        when(managerService.addStudentList(any(), any())).thenReturn(1);
+        mockMvc.perform(put("/api/manager/establishment/5f9f1b9b9c9d1b2b8c1c1c1c/addStudentList")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(studentLinkDTOJacksonTester.write(List.of(studentLinkDTO, studentLinkDTO)).getJson()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("STUDENTS_PARTIALLY_ADDED"));
+    }
+
+    @Test
+    public void getEstablishmentTestHappyDay() throws Exception {
+        when(managerService.getEstablishment(any())).thenReturn(establishmentDTO);
+        mockMvc.perform(get("/api/manager/establishment/5f9f1b9b9c9d1b2b8c1c1c1c"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void getEstablishmentTest404() throws Exception {
+        when(managerService.getEstablishment(any())).thenThrow(EstablishmentNotFoundException.class);
+        mockMvc.perform(get("/api/manager/establishment/5f9f1b9b9c9d1b2b8c1c1c1c"))
+                .andExpect(status().isNotFound());
     }
 }
