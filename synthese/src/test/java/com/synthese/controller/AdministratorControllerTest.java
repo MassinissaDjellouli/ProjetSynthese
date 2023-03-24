@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synthese.dto.CreateUserDTO;
 import com.synthese.dto.EstablishmentDTO;
 import com.synthese.dto.LoginDTO;
+import com.synthese.dto.ProgramCreationDTO;
 import com.synthese.exceptions.*;
 import com.synthese.model.*;
 import com.synthese.service.AdministratorService;
@@ -25,7 +26,7 @@ import java.util.List;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -43,6 +44,7 @@ public class AdministratorControllerTest {
 
     JacksonTester<EstablishmentDTO> establishmentDTOJacksonTester;
     JacksonTester<CreateUserDTO> createUserDTOJacksonTester;
+    JacksonTester<List<ProgramCreationDTO>> programCreationDTOJacksonTester;
 
     LoginDTO loginDTO;
 
@@ -58,6 +60,7 @@ public class AdministratorControllerTest {
     Manager manager2;
 
     CreateUserDTO createUserDTO;
+    ProgramCreationDTO programCreationDTO;
 
     @BeforeEach
     public void setup() {
@@ -151,6 +154,10 @@ public class AdministratorControllerTest {
                 .lastName("name")
                 .password("password")
                 .username("username")
+                .build();
+
+        programCreationDTO = ProgramCreationDTO.builder()
+                .name("name")
                 .build();
 
         mockMvc = MockMvcBuilders.standaloneSetup(administratorController).build();
@@ -416,5 +423,23 @@ public class AdministratorControllerTest {
                         .content(establishmentDTOJacksonTester.write(establishmentDTO).getJson()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()", is(0)));
+    }
+
+    @Test
+    public void addProgramListTestHappyDay() throws Exception {
+        doNothing().when(administratorService).addProgramList(any(), any());
+        mockMvc.perform(post("/api/admin/establishment/{establishmentId}/addProgramList", "55f5f5f5f5f5f5f5f5f5f5f5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(programCreationDTOJacksonTester.write(List.of(programCreationDTO)).getJson()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void addProgramListTest400() throws Exception {
+        doThrow(AlreadyExistingProgramException.class).when(administratorService).addProgramList(any(), any());
+        mockMvc.perform(post("/api/admin/establishment/{establishmentId}/addProgramList", "55f5f5f5f5f5f5f5f5f5f5f5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(programCreationDTOJacksonTester.write(List.of(programCreationDTO)).getJson()))
+                .andExpect(status().isBadRequest());
     }
 }
