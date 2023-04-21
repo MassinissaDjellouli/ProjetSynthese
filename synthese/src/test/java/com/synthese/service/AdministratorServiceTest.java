@@ -95,11 +95,11 @@ public class AdministratorServiceTest {
                     add("Jeudi");
                     add("Vendredi");
                 }})
-                .dinnerLength("33")
+                .dinnerLength(33)
                 .periodLength(33)
                 .periodsPerDay(3)
-                .periodsBeforeDinner("1")
-                .betweenPeriodsLength("33")
+                .periodsBeforeDinner(1)
+                .betweenPeriodsLength(33)
                 .teachers(new ArrayList<>())
                 .students(new ArrayList<>())
                 .programs(new ArrayList<>())
@@ -120,11 +120,11 @@ public class AdministratorServiceTest {
                     add("Jeudi");
                     add("Vendredi");
                 }})
-                .dinnerLength("33")
+                .dinnerLength(33)
                 .periodLength(33)
                 .periodsPerDay(3)
-                .periodsBeforeDinner("1")
-                .betweenPeriodsLength("33")
+                .periodsBeforeDinner(1)
+                .betweenPeriodsLength(33)
                 .teachers(new ArrayList<>())
                 .students(new ArrayList<>())
                 .programs(new ArrayList<>())
