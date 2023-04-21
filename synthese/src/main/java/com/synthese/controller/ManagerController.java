@@ -103,4 +103,27 @@ public class ManagerController {
                     .build());
         }
     }
+
+    @GetMapping("/generateSchedules/{programId}")
+    public ResponseEntity<?> generateSchedules(@PathVariable String programId) {
+        try {
+            managerService.generateSchedules(programId);
+            return ResponseEntity.ok().body(DataDTO.<String>builder().data("Success").build());
+        } catch (EstablishmentNotFoundException | ProgramNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDTO
+                    .builder()
+                    .error(Errors.PROGRAM_NOT_FOUND)
+                    .build());
+        } catch (ScheduleGenerationException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorDTO
+                    .builder()
+                    .error(Errors.SCHEDULE_GENERATION_FAILED)
+                    .build());
+        } catch (ChatGPTException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorDTO
+                    .builder()
+                    .error(Errors.CHAT_GPT_FAILED)
+                    .build());
+        }
+    }
 }
