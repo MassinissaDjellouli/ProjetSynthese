@@ -44,12 +44,12 @@ public class EstablishmentDTO {
     private String closeTime;
     @NotBlank
     private String classesStartTime;
-    @NotBlank
-    private String periodsBeforeDinner;
-    @NotBlank
-    private String dinnerLength;
-    @NotBlank
-    private String betweenPeriodsLength;
+    @Min(1)
+    private long periodsBeforeDinner;
+    @Min(1)
+    private long dinnerLength;
+    @Min(1)
+    private long betweenPeriodsLength;
 
     public Establishment toModel() {
         return Establishment.builder()
