@@ -43,11 +43,11 @@ public class EstablishmentCreationDTO {
     private String closeTime;
     @NotBlank
     private String classesStartTime;
-    @NotBlank
+    @Min(1)
     private long periodsBeforeDinner;
-    @NotBlank
+    @Min(1)
     private long dinnerLength;
-    @NotBlank
+    @Min(1)
     private long betweenPeriodsLength;
 
     public Establishment toModel() {
