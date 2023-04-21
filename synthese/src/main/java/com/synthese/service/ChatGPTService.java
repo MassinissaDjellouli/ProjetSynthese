@@ -40,7 +40,7 @@ public class ChatGPTService {
             con.setRequestProperty("Content-Type", "application/json");
             con.setRequestProperty("Authorization", "Bearer " + API_KEY);
             Map<String, Object> body = new HashMap<>();
-            body.put("model", "gpt-4");
+            body.put("model", "gpt-3.5-turbo");
             body.put("messages", messages);
             body.put("temperature", 0.5f);
             System.out.println(mapper.writeValueAsString(body));
