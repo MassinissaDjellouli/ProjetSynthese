@@ -25,6 +25,7 @@ public class ManagerService {
     private final CourseRepository courseRepository;
     private final StudentRepository studentRepository;
     private final EstablishmentRepository establishmentRepository;
+    private final ScheduleGenerationService scheduleGenerationService;
 
     public List<ManagerDTO> login(LoginDTO loginDTO) throws UserNotFoundException, WrongPasswordException, ManagerNotFoundException {
         Optional<User> user = userRepository.findByUsernameAndRole(loginDTO.getUsername(), Roles.MANAGER);
@@ -134,5 +135,9 @@ public class ManagerService {
             throw new EstablishmentNotFoundException();
         }
         return opt.get().toDTO();
+    }
+
+    public void generateSchedules(String programId) throws ChatGPTException, EstablishmentNotFoundException, ProgramNotFoundException, ScheduleGenerationException {
+        scheduleGenerationService.generateScheduleForProgram(new ObjectId(programId));
     }
 }
