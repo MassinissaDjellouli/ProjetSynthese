@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,4 +16,33 @@ public class CourseScheduleBlock {
     private String startTime;
     private int periods;
     private String courseId;
+
+    public static List<CourseScheduleBlock> generateScheduleFormat() {
+        return List.of(
+                CourseScheduleBlock.builder()
+                        .day("day")
+                        .startTime("startTime")
+                        .periods(1)
+                        .courseId("courseId")
+                        .build(),
+                CourseScheduleBlock.builder()
+                        .day("day")
+                        .startTime("startTime")
+                        .periods(1)
+                        .courseId("courseId")
+                        .build(),
+                CourseScheduleBlock.builder()
+                        .day("day")
+                        .startTime("startTime")
+                        .periods(1)
+                        .courseId("courseId")
+                        .build(),
+                CourseScheduleBlock.builder()
+                        .day("day")
+                        .startTime("startTime")
+                        .periods(1)
+                        .courseId("courseId")
+                        .build()
+        );
+    }
 }

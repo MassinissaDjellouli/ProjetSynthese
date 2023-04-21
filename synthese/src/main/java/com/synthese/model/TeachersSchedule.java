@@ -18,4 +18,29 @@ public class TeachersSchedule {
     private String teacherId;
     private String establishmentId;
     List<CourseScheduleBlock> scheduleBlocks;
+
+    public static List<TeachersSchedule> generateScheduleFormat() {
+        return List.of(
+                TeachersSchedule.builder()
+                        .teacherId("teacherId")
+                        .establishmentId("establishmentId")
+                        .scheduleBlocks(CourseScheduleBlock.generateScheduleFormat())
+                        .build(),
+                TeachersSchedule.builder()
+                        .teacherId("teacherId")
+                        .establishmentId("establishmentId")
+                        .scheduleBlocks(CourseScheduleBlock.generateScheduleFormat())
+                        .build(),
+                TeachersSchedule.builder()
+                        .teacherId("teacherId")
+                        .establishmentId("establishmentId")
+                        .scheduleBlocks(CourseScheduleBlock.generateScheduleFormat())
+                        .build(),
+                TeachersSchedule.builder()
+                        .teacherId("teacherId")
+                        .establishmentId("establishmentId")
+                        .scheduleBlocks(CourseScheduleBlock.generateScheduleFormat())
+                        .build()
+        );
+    }
 }
