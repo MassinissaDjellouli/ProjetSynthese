@@ -212,4 +212,34 @@ public class ManagerControllerTest {
         mockMvc.perform(get("/api/manager/establishment/5f9f1b9b9c9d1b2b8c1c1c1c"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    public void generateScheduleTestHappyDay() throws Exception {
+        doNothing().when(managerService).generateSchedules(any());
+        mockMvc.perform(get("/api/manager/generateSchedules/5f9f1b9b9c9d1b2b8c1c1c1c"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void generateScheduleTest400() throws Exception {
+        doThrow(EstablishmentNotFoundException.class).when(managerService).generateSchedules(any());
+        mockMvc.perform(get("/api/manager/generateSchedules/5f9f1b9b9c9d1b2b8c1c1c1c"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void generateScheduleTest500ChatGPT() throws Exception {
+        doThrow(ChatGPTException.class).when(managerService).generateSchedules(any());
+        mockMvc.perform(get("/api/manager/generateSchedules/5f9f1b9b9c9d1b2b8c1c1c1c"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.error").value("CHAT_GPT_FAILED"));
+    }
+
+    @Test
+    public void generateScheduleTest500Schedule() throws Exception {
+        doThrow(ScheduleGenerationException.class).when(managerService).generateSchedules(any());
+        mockMvc.perform(get("/api/manager/generateSchedules/5f9f1b9b9c9d1b2b8c1c1c1c"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.error").value("SCHEDULE_GENERATION_FAILED"));
+    }
 }
