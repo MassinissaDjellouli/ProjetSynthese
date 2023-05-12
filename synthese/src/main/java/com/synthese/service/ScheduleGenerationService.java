@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synthese.dto.CourseDTO;
 import com.synthese.dto.TeacherClassesDTO;
 import com.synthese.dto.TeacherScheduleGenerationInfoDTO;
+import com.synthese.enums.GenerationCycle;
 import com.synthese.exceptions.ChatGPTException;
 import com.synthese.exceptions.EstablishmentNotFoundException;
 import com.synthese.exceptions.ProgramNotFoundException;
@@ -15,10 +16,7 @@ import com.synthese.exceptions.ScheduleGenerationException;
 import com.synthese.model.ChatGPT.ChatGPTMessage;
 import com.synthese.model.ChatGPT.ChatGPTResponse;
 import com.synthese.model.*;
-import com.synthese.repository.CourseRepository;
-import com.synthese.repository.EstablishmentRepository;
-import com.synthese.repository.ProgramRepository;
-import com.synthese.repository.TeacherRepository;
+import com.synthese.repository.*;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
@@ -37,6 +35,7 @@ public class ScheduleGenerationService {
     private final ProgramRepository programRepository;
     private final TeacherRepository teacherRepository;
     private final CourseRepository courseRepository;
+    private final GenerationFailureInfoRepository generationFailureInfoRepository;
     private final String JSON_DELIMITER = "____________________________________________________";
     private final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final ObjectMapper mapper = getMapper();
@@ -49,10 +48,10 @@ public class ScheduleGenerationService {
         return mapper;
     }
 
-    public void generateScheduleForProgram(ObjectId programID) throws EstablishmentNotFoundException, ProgramNotFoundException, ChatGPTException, ScheduleGenerationException {
+    public void generateScheduleForProgram(ObjectId programID, String generationId) throws EstablishmentNotFoundException, ProgramNotFoundException, ChatGPTException, ScheduleGenerationException {
         TeacherScheduleGenerationInfoDTO teacherScheduleGenerationInfoDTO = createTeachersScheduleGenerationInfo(programID);
-        ChatGPTResponse chatGPTResponse = generateTeachersSchedule(teacherScheduleGenerationInfoDTO);
-        processResponse(chatGPTResponse, teacherScheduleGenerationInfoDTO);
+        ChatGPTResponse chatGPTResponse = generateTeachersSchedule(teacherScheduleGenerationInfoDTO, generationId);
+        processResponse(chatGPTResponse, teacherScheduleGenerationInfoDTO, generationId);
     }
 
     private TeacherScheduleGenerationInfoDTO createTeachersScheduleGenerationInfo(ObjectId programID) throws ProgramNotFoundException, EstablishmentNotFoundException {
@@ -272,8 +271,11 @@ public class ScheduleGenerationService {
     private void correctSchedule(ProgramTeachersSchedule schedule,
                                  List<String> corrections,
                                  TeacherScheduleGenerationInfoDTO scheduleGenerationInfo,
-                                 int correctionDepth) throws ChatGPTException, ScheduleGenerationException {
+                                 int correctionDepth, String generationId) throws ChatGPTException, ScheduleGenerationException {
         if (correctionDepth > MAX_CORRECTION_DEPTH) {
+            createGenerationFailureInfo(generationId,
+                    GenerationCycle.CORRECTION,
+                    MAX_CORRECTION_DEPTH, "Nombre de corrections maximum atteint(" + MAX_CORRECTION_DEPTH + ")jdk 1");
             throw new ScheduleGenerationException();
         }
         try {
@@ -281,22 +283,27 @@ public class ScheduleGenerationService {
                     ", while making sure to keep the same format and correct the following mistakes:" +
                     String.join(",", corrections) + ". Make sure it is delimited by a " + JSON_DELIMITER +
                     "at the extremities.";
-            ChatGPTResponse response = chatGPTService.chatGPT(chatGPTService.generateMessages(prompt));
-            processResponse(response, scheduleGenerationInfo, correctionDepth);
+            ChatGPTResponse response = chatGPTService.chatGPT(chatGPTService.generateMessages(prompt), generationId);
+            processResponse(response, scheduleGenerationInfo, correctionDepth, generationId);
         } catch (JsonProcessingException e) {
             throw new ChatGPTException();
         }
     }
 
-    private void processResponse(ChatGPTResponse response, TeacherScheduleGenerationInfoDTO scheduleGenerationInfo, int correctionCount) throws ScheduleGenerationException {
+    private void processResponse(ChatGPTResponse response,
+                                 TeacherScheduleGenerationInfoDTO scheduleGenerationInfo,
+                                 int correctionCount, String generationId) throws ScheduleGenerationException {
         try {
             String responseString = response.getChoices().get(0).getMessage().getContent();
             String[] split = responseString.split(JSON_DELIMITER);
-            String json = "";
+            String json;
             if (split.length < 2 && split[0].startsWith("{")) {
                 json = split[0].replaceAll("\n", "").replaceAll(
                         " ", "");
             } else if (split.length < 2) {
+                createGenerationFailureInfo(generationId,
+                        correctionCount == 0 ? GenerationCycle.GENERATION : GenerationCycle.CORRECTION,
+                        correctionCount, "Réponse invalide: " + responseString);
                 throw new ScheduleGenerationException();
             } else {
                 json = split[1].replaceAll("\n", "").replaceAll(
@@ -308,9 +315,11 @@ public class ScheduleGenerationService {
                 if (corrections.isEmpty()) {
                     return;
                 }
-                correctSchedule(schedule, corrections, scheduleGenerationInfo, correctionCount + 1);
+                correctSchedule(schedule, corrections, scheduleGenerationInfo, correctionCount + 1, generationId);
             } catch (JsonMappingException e) {
-                System.out.println("Invalid json: " + responseString);
+                createGenerationFailureInfo(generationId,
+                        correctionCount == 0 ? GenerationCycle.GENERATION : GenerationCycle.CORRECTION,
+                        correctionCount, "Format json invalide: " + responseString);
                 e.printStackTrace();
             }
         } catch (Exception e) {
@@ -319,11 +328,11 @@ public class ScheduleGenerationService {
         }
     }
 
-    private void processResponse(ChatGPTResponse response, TeacherScheduleGenerationInfoDTO scheduleGenerationInfo) throws ScheduleGenerationException {
-        processResponse(response, scheduleGenerationInfo, 0);
+    private void processResponse(ChatGPTResponse response, TeacherScheduleGenerationInfoDTO scheduleGenerationInfo, String generationId) throws ScheduleGenerationException {
+        processResponse(response, scheduleGenerationInfo, 0, generationId);
     }
 
-    private ChatGPTResponse generateTeachersSchedule(TeacherScheduleGenerationInfoDTO teacherScheduleGenerationInfoDTO) throws ChatGPTException, ScheduleGenerationException {
+    private ChatGPTResponse generateTeachersSchedule(TeacherScheduleGenerationInfoDTO teacherScheduleGenerationInfoDTO, String generationId) throws ChatGPTException, ScheduleGenerationException {
         try {
             ProgramTeachersSchedule scheduleFormat = ProgramTeachersSchedule.generateScheduleFormat();
             String scheduleFormatStringified = mapper.writeValueAsString(scheduleFormat);
@@ -331,10 +340,15 @@ public class ScheduleGenerationService {
             String promptFooter = "with periodLength,dinnerLength and betweenPeriodsLength being in minutes, with the first period starting at classesStartTime, with a pause between each periods of betweenPeriodsLength minutes, with a pause of dinnerLength minutes after periodsBeforeDinner periods. There must be at most periodsPerDay periods in a day. the hoursPerWeek of each class must be respected in the schedule. the hoursPerWeek need to be separated in blocks of periodLength length. The schedule must be valid, meaning that no teacher can teach two classes at the same time. You can ignore fields with the null value. if they are too complex, you can ignore a few restrictions so long as you return a json in the right format.";
             String stringifiedData = mapper.writeValueAsString(teacherScheduleGenerationInfoDTO);
             List<ChatGPTMessage> chatGPTMessages = createMessages(promptHeader, stringifiedData, promptFooter);
-            return chatGPTService.chatGPT(chatGPTMessages);
+            return chatGPTService.chatGPT(chatGPTMessages, generationId);
         } catch (JsonProcessingException e) {
+            createGenerationFailureInfo(generationId, GenerationCycle.GENERATION, 0, "Wrong json format");
             throw new ChatGPTException();
         }
+    }
+
+    private void createGenerationFailureInfo(String generationId, GenerationCycle cycle, int correctionCount, String message) {
+        generationFailureInfoRepository.save(new GenerationFailureInfo(generationId, cycle, correctionCount, message));
     }
 
     private List<ChatGPTMessage> createMessages(String promptHeader, String stringifiedData, String promptFooter) {

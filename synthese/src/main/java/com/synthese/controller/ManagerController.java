@@ -104,25 +104,31 @@ public class ManagerController {
         }
     }
 
-    @GetMapping("/generateSchedules/{programId}")
-    public ResponseEntity<?> generateSchedules(@PathVariable String programId) {
+    @GetMapping("/generateSchedules/{programId}/{generationId}")
+    public ResponseEntity<?> generateSchedules(@PathVariable String programId, @PathVariable String generationId) {
         try {
-            managerService.generateSchedules(programId);
+            managerService.generateSchedules(programId, generationId);
             return ResponseEntity.ok().body(DataDTO.<String>builder().data("Success").build());
         } catch (EstablishmentNotFoundException | ProgramNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorDTO
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorDTO
                     .builder()
                     .error(Errors.PROGRAM_NOT_FOUND)
                     .build());
-        } catch (ScheduleGenerationException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorDTO
+        } catch (ScheduleGenerationException | ChatGPTException e) {
+            return handleGenerationException(generationId, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<?> handleGenerationException(String generationId, HttpStatus status) {
+        try {
+            return ResponseEntity.status(status).body(DataDTO
+                    .<GenerationFailureInfoDTO>builder()
+                    .data(managerService.getGenerationFailureInfo(generationId))
+                    .build());
+        } catch (GenerationFailureInfoNotFoundException ex) {
+            return ResponseEntity.status(status).body(ErrorDTO
                     .builder()
                     .error(Errors.SCHEDULE_GENERATION_FAILED)
-                    .build());
-        } catch (ChatGPTException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ErrorDTO
-                    .builder()
-                    .error(Errors.CHAT_GPT_FAILED)
                     .build());
         }
     }

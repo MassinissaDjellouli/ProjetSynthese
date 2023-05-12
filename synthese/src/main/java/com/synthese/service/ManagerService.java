@@ -23,6 +23,7 @@ public class ManagerService {
     private final TeacherRepository teacherRepository;
     private final ProgramRepository programRepository;
     private final CourseRepository courseRepository;
+    private final GenerationFailureInfoRepository generationFailureInfoRepository;
     private final StudentRepository studentRepository;
     private final EstablishmentRepository establishmentRepository;
     private final ScheduleGenerationService scheduleGenerationService;
@@ -137,7 +138,15 @@ public class ManagerService {
         return opt.get().toDTO();
     }
 
-    public void generateSchedules(String programId) throws ChatGPTException, EstablishmentNotFoundException, ProgramNotFoundException, ScheduleGenerationException {
-        scheduleGenerationService.generateScheduleForProgram(new ObjectId(programId));
+    public void generateSchedules(String programId, String generationId) throws ChatGPTException, EstablishmentNotFoundException, ProgramNotFoundException, ScheduleGenerationException {
+        scheduleGenerationService.generateScheduleForProgram(new ObjectId(programId), generationId);
+    }
+
+    public GenerationFailureInfoDTO getGenerationFailureInfo(String genId) throws GenerationFailureInfoNotFoundException {
+        Optional<GenerationFailureInfo> opt = generationFailureInfoRepository.findById(genId);
+        if (opt.isEmpty()) {
+            throw new GenerationFailureInfoNotFoundException();
+        }
+        return opt.get().toDTO();
     }
 }

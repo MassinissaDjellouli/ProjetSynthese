@@ -1,9 +1,12 @@
 package com.synthese.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.synthese.enums.GenerationCycle;
 import com.synthese.exceptions.ChatGPTException;
 import com.synthese.model.ChatGPT.ChatGPTMessage;
 import com.synthese.model.ChatGPT.ChatGPTResponse;
+import com.synthese.model.GenerationFailureInfo;
+import com.synthese.repository.GenerationFailureInfoRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +26,20 @@ public class ChatGPTService {
 
     private final String API_KEY;
     private static final ObjectMapper mapper = new ObjectMapper();
+    private final GenerationFailureInfoRepository generationFailureInfoRepository;
 
-    public ChatGPTService(@Value("${openai.api.key}") String API_KEY) {
+    public ChatGPTService(@Value("${openai.api.key}") String API_KEY, GenerationFailureInfoRepository generationFailureInfoRepository) {
+        this.generationFailureInfoRepository = generationFailureInfoRepository;
         this.API_KEY = API_KEY;
     }
 
 
     //Inspiration: https://gist.github.com/gantoin/190684c344bb70e5c5f9f2339c7be6ed
+    private void createGenerationFailureInfo(String generationId, GenerationCycle cycle, int correctionCount, String message) {
+        generationFailureInfoRepository.save(new GenerationFailureInfo(generationId, cycle, correctionCount, message));
+    }
 
-    public ChatGPTResponse chatGPT(List<ChatGPTMessage> messages) throws ChatGPTException {
+    public ChatGPTResponse chatGPT(List<ChatGPTMessage> messages, String generationId) throws ChatGPTException {
         try {
             String url = "https://api.openai.com/v1/chat/completions";
             HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
@@ -65,7 +73,7 @@ public class ChatGPTService {
             in.close();
             return mapper.readValue(response.toString(), ChatGPTResponse.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            createGenerationFailureInfo(generationId, GenerationCycle.GENERATION, 0, "Erreur lors de la communication avec l'API de chatGPT");
             throw new ChatGPTException();
         }
     }
